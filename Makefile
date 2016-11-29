@@ -1,6 +1,6 @@
 CC       = g++
-INCLUDE  = /home/pi/picotcp/build/lib/libpicotcp.a
-HEADERS  = /home/pi/picotcp/build/include
+INCLUDE  = ../picotcp/build/lib/libpicotcp.a
+HEADERS  = ../picotcp/build/include
 CFLAGS   = -Wall -g -I $(HEADERS)
 LFLAGS   =
 SRC      = src
