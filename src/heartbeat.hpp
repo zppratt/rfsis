@@ -3,10 +3,19 @@
 
 #include <stdio.h>
 #include <unistd.h>
-#include "pico_arp.h"
 #include <string>
 #include <iostream>
 #include <thread>
+
+#include "pico_arp.h"
+#include "pico_device.h"
+#include "pico_ipv4.h"
+#include "pico_stack.h"
+#include "pico_socket.h"
+#include "pico_dev_tap.h"
+#include "pico_icmp4.h"
+
+using namespace std;
 
 class heartbeat{
 public:
@@ -19,10 +28,10 @@ private:
 };
 
 heartbeat::heartbeat(string main_ip){
-  this->heartbeat = heartbeat;
+  this->main_ip = main_ip;
 }
 
-int heartbeat::startThread(){
+void heartbeat::startThread(){
   std::thread t_heartbeat (arp_check);
 }
 

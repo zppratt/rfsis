@@ -28,14 +28,14 @@ extern int errno;
 json config;
 
 struct web_server serv = {
-    .dev       = NULL,
-    .read      = 0,
-    .pos       = 0,
-    .len       = 0,
-    .flag      = 0,
-    .port      = 8080,
-    .ipv4_addr = "192.168.1.101",
-    .netmask   = "255.255.255.0"
+    dev       : NULL,
+    read      : 0,
+    pos       : 0,
+    len       : 0,
+    flag      : 0,
+    port      : 8080,
+    ipv4_addr : "192.168.1.101",
+    netmask   : "255.255.255.0"
 };
 
 void deferred_exit(pico_time __attribute__((unused)) now, void *arg) {
@@ -231,18 +231,18 @@ void read_config() {
         myfile.close();
     }
     else cout << "Unable to open file";
-    return 0;
 }
 
 int main(void) {
-   
+
+    heartbeat hBeat("192.168.1.12");
     read_config();
-    
+
     // Am I the master or the slave?
     auto is_backup = config["backup"];
 
     if (is_backup) {
-        // TODO do backupy type things
+        hBeat.startThread();
     }
     else {
         // TODO do masterly deeds
