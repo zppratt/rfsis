@@ -205,7 +205,7 @@ struct pico_device* init_picotcp(void) {
     struct pico_device *dev;
     struct pico_ip4 ipaddr, netmask, local;
 
-    pico_string_to_ipv4("wlan0", &local.addr);
+    pico_string_to_ipv4("tap0", &local.addr);
 
     dev = pico_ipv4_link_find(&local);
 
@@ -235,18 +235,13 @@ void read_config() {
 
 int main(void) {
 
-    heartbeat hBeat("192.168.1.12");
+
     read_config();
 
     // Am I the master or the slave?
     auto is_backup = config["backup"];
 
-    if (is_backup) {
-        hBeat.startThread();
-    }
-    else {
-        // TODO do masterly deeds
-    }
+
 
     pico_stack_init();
 
@@ -259,6 +254,14 @@ int main(void) {
     setup_server();
 
     pico_stack_loop();
+
+    heartbeat hBeat("192.168.1.12", serv.dev);
+    if (is_backup) {
+        //TODO do backuply deeds
+    }
+    else {
+        hBeat.startThread();
+    }
 
     return 0;
 }

@@ -22,16 +22,18 @@ using namespace std;
 
 class heartbeat{
 public:
-  heartbeat(string main_ip);
+  heartbeat(string main_ip, struct pico_device *dev);
   void startThread();
   static void arp_check();
 
 private:
   static string main_ip;
+  struct pico_device *dev;
 };
 
-heartbeat::heartbeat(string main_ip){
+heartbeat::heartbeat(string main_ip, struct pico_device *dev){
   this->main_ip = main_ip;
+  this->dev = dev;
 }
 
 void heartbeat::startThread(){
@@ -41,13 +43,10 @@ void heartbeat::startThread(){
 void heartbeat::arp_check(){
   struct pico_ip4 ip;
   struct pico_eth *eth = NULL;
-  struct pico_arp entry;
+
 
   pico_string_to_ipv4(main_ip.c_str(), &ip.addr);
-  entry.ipv4 = ip;
 
-  pico_arp_add_entry(&entry);
-  entry.arp_status = PICO_ARP_STATUS_STALE;
   eth = pico_arp_lookup(&ip);
 }
 
