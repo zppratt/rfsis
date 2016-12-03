@@ -17,14 +17,17 @@
 
 using namespace std;
 
+
+
+
 class heartbeat{
 public:
   heartbeat(string main_ip);
   void startThread();
-  void arp_check();
+  static void arp_check();
 
 private:
-  string main_ip;
+  static string main_ip;
 };
 
 heartbeat::heartbeat(string main_ip){
@@ -47,5 +50,6 @@ void heartbeat::arp_check(){
   entry.arp_status = PICO_ARP_STATUS_STALE;
   eth = pico_arp_lookup(&ip);
 }
+
 
 #endif
