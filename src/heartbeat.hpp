@@ -23,12 +23,14 @@ using namespace std;
 class heartbeat{
 public:
   heartbeat(string main_ip, struct pico_device *dev);
-  void startThread();
-  static void arp_check();
+  void arp_check();
+  std::thread arp_checkThread() {
+          return std::thread([=] { arp_check(); });
+  }
 
 private:
-  static string main_ip;
-  static struct pico_device *dev;
+  string main_ip;
+  struct pico_device *dev;
 };
 
 heartbeat::heartbeat(string main_ip, struct pico_device *dev){
@@ -36,9 +38,6 @@ heartbeat::heartbeat(string main_ip, struct pico_device *dev){
   this->dev = dev;
 }
 
-void heartbeat::startThread(){
-  std::thread t_heartbeat (arp_check);
-}
 
 void heartbeat::arp_check(){
   struct pico_ip4 ip;

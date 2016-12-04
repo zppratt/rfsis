@@ -266,7 +266,7 @@ int main(void) {
     // Begin network processing
     pico_stack_loop();
 
-    heartbeat hBeat("192.168.1.12", serv.dev);
+    heartbeat *hBeat = new heartbeat("192.168.1.12", serv.dev);
 
     // Am I the master or the slave?
     auto is_backup = config["backup"];
@@ -276,7 +276,7 @@ int main(void) {
         //TODO do backuply deeds
     }
     else {
-        hBeat.startThread();
+        std::thread thd1 = hBeat->arp_checkThread();
     }
 
     return 0;
