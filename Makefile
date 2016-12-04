@@ -12,7 +12,7 @@ EXE      = test
 all : build $(EXE)
 
 $(EXE): $(OBJS)
-	$(CC) $(LFLAGS) $(OBJS) $(INCLUDE) -o $@
+	$(CC) $(LFLAGS) $(OBJS) $(INCLUDE) -lpthread -o $@
 
 $(BIN)/%.o: $(SRC)/%.cpp
 	$(CC) $(CFLAGS) -I include/ -c $< -o $@
