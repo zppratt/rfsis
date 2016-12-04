@@ -21,7 +21,7 @@
 using json = nlohmann::json;
 using namespace std;
 
-char *p_website = "src/website.html";
+string p_website = "src/website.html";
 
 extern int errno;
 
@@ -53,7 +53,7 @@ int read_html_file(struct pico_socket *s) {
 
     // We want to use a file descriptors because we want to treat
     // the file as a stream instead of with handlers
-    int fd = open(p_website, O_RDONLY);
+    int fd = open(p_website.c_str(), O_RDONLY);
     if(fd < 0) {
         printf("ERROR: %s\n", strerror(errno));
         return -1;
