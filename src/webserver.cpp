@@ -26,14 +26,14 @@ string p_website = "src/website.html";
 extern int errno;
 
 struct web_server serv = {
-    dev       : NULL,
-    read      : 0,
-    pos       : 0,
-    len       : 0,
-    flag      : 0,
-    port      : 8080,
-    ipv4_addr : "192.168.1.101",
-    netmask   : "255.255.255.0"
+    NULL,
+    0,
+    0,
+    0,
+    0,
+    8080,
+    "192.168.1.101",
+    "255.255.255.0"
 };
 
 void deferred_exit(pico_time __attribute__((unused)) now, void *arg) {
