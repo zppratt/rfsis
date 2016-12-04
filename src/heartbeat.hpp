@@ -28,7 +28,7 @@ public:
 
 private:
   static string main_ip;
-  struct pico_device *dev;
+  static struct pico_device *dev;
 };
 
 heartbeat::heartbeat(string main_ip, struct pico_device *dev){
@@ -44,10 +44,9 @@ void heartbeat::arp_check(){
   struct pico_ip4 ip;
   struct pico_eth *eth = NULL;
 
-
   pico_string_to_ipv4(main_ip.c_str(), &ip.addr);
 
-  eth = pico_arp_lookup(&ip);
+  pico_arp_request(dev, &ip, PICO_ARP_ANNOUNCE);
 }
 
 
