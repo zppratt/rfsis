@@ -277,6 +277,7 @@ int main(void) {
     }
     else {
         std::thread thd1 = hBeat->arp_checkThread();
+        thd1.join();
     }
 
     return 0;

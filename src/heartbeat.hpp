@@ -7,6 +7,7 @@
 #include <iostream>
 #include <thread>
 
+extern "C" {
 #include "pico_arp.h"
 #include "pico_device.h"
 #include "pico_ipv4.h"
@@ -14,6 +15,7 @@
 #include "pico_socket.h"
 #include "pico_dev_tap.h"
 #include "pico_icmp4.h"
+}
 
 using namespace std;
 

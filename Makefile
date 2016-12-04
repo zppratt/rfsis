@@ -7,7 +7,7 @@ SRC      = src
 BIN      = bin
 FILES    = $(wildcard $(SRC)/*.cpp)
 OBJS     = $(patsubst $(SRC)/%.cpp, $(BIN)/%.o, $(FILES))
-EXE      = test
+EXE      = webserver
 
 all : build $(EXE)
 
