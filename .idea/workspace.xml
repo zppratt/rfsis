@@ -12,6 +12,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b978142d-dc4c-4361-a52a-066a5ce8c437" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/tags" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/test" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
@@ -505,12 +506,12 @@
       <workItem from="1480430190428" duration="2421000" />
       <workItem from="1480598009996" duration="1044000" />
       <workItem from="1480787942366" duration="6337000" />
-      <workItem from="1480797976793" duration="5441000" />
+      <workItem from="1480797976793" duration="5509000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="15538000" />
+    <option name="totallyTimeSpent" value="15606000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1920" height="1053" extended-state="6" />
