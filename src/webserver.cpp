@@ -25,8 +25,6 @@ char *p_website = "src/website.html";
 
 extern int errno;
 
-json config;
-
 struct web_server serv = {
     dev       : NULL,
     read      : 0,
@@ -214,48 +212,64 @@ struct pico_device* init_picotcp(void) {
         return NULL;
     }
 
-    pico_string_to_ipv4(serv.ipv4_addr, &ipaddr.addr);
-    pico_string_to_ipv4(serv.netmask, &netmask.addr);
+    pico_string_to_ipv4(serv.ipv4_addr.c_str(), &ipaddr.addr);
+    pico_string_to_ipv4(serv.netmask.c_str(), &netmask.addr);
     pico_ipv4_link_add(dev, ipaddr, netmask);
 
     return dev;
 }
 
-void read_config() {
+json read_config() {
+    json res;
     ifstream myfile ("config.json");
     if (myfile.is_open())
     {
         string content( (std::istreambuf_iterator<char>(myfile) ),
                 (std::istreambuf_iterator<char>()    ) );
-        config = json::parse(content);
+        res = json::parse(content);
         myfile.close();
+        return res;
     }
-    else cout << "Unable to open file";
+    else {
+        cout << "Unable to read config";
+        return NULL;
+    }
 }
 
 int main(void) {
 
+    // Read in the config file
+    json config = read_config();
 
-    read_config();
+    cout << typeid(config["netmask"]).name() << endl;
 
-    // Am I the master or the slave?
-    auto is_backup = config["backup"];
+    if (config["ipv4_addr"] != nullptr) {
+        serv.ipv4_addr = config["ipv4_addr"];
+    }
+    if (config["netmask"] != nullptr) {
+        serv.ipv4_addr = config["netmask"];
+    }
 
-
-
+    // Start the picoTcp stack
     pico_stack_init();
-
     serv.dev = init_picotcp();
     if(!serv.dev) {
         printf("Could not make device!\n");
         return -1;
     }
 
+    // Setup the server (open socket and start listening)
     setup_server();
 
+    // Begin network processing
     pico_stack_loop();
 
     heartbeat hBeat("192.168.1.12", serv.dev);
+
+    // Am I the master or the slave?
+    auto is_backup = config["backup"];
+
+    // Begin the heartbeat to the master if backup
     if (is_backup) {
         //TODO do backuply deeds
     }

@@ -42,7 +42,6 @@ void heartbeat::startThread(){
 
 void heartbeat::arp_check(){
   struct pico_ip4 ip;
-  struct pico_eth *eth = NULL;
 
   pico_string_to_ipv4(main_ip.c_str(), &ip.addr);
 

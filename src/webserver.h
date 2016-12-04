@@ -12,8 +12,8 @@ struct web_server {
     int len;
     int flag;
     char recvbuf[BSIZE];
-    char *ipv4_addr;
-    char *netmask;
+    std::string ipv4_addr;
+    std::string netmask;
 } web_server;
 
 struct pico_device* init_picotcp();

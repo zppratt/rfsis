@@ -13,9 +13,9 @@ int main() {
         string content( (std::istreambuf_iterator<char>(myfile) ),
                 (std::istreambuf_iterator<char>()    ) );
         json configJson = json::parse(content);
-        cout << configJson["backup"];
+        cout << (configJson["asdf"]== nullptr);
         myfile.close();
     }
-    else cout << "Unable to open file"; 
+    else cout << "Unable to open file";
     return 0;
 }
