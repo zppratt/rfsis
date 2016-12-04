@@ -232,7 +232,7 @@ json read_config() {
     }
     else {
         cout << "Unable to read config";
-        return NULL;
+        return nullptr;
     }
 }
 
