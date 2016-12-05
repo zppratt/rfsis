@@ -248,7 +248,7 @@ int main(void) {
         serv.ipv4_addr = config["ipv4_addr"];
     }
     if (config["netmask"] != nullptr) {
-        serv.ipv4_addr = config["netmask"];
+        serv.netmask = config["netmask"];
     }
 
     // Start the picoTcp stack
