@@ -223,7 +223,8 @@ struct pico_device* init_picotcp(void) {
 
 json read_config() {
     json res;
-    ifstream myfile ("config.json");
+    ifstream myfile ("src/config.json");
+
     if (myfile.is_open())
     {
         string content( (std::istreambuf_iterator<char>(myfile) ),
@@ -233,7 +234,7 @@ json read_config() {
         return res;
     }
     else {
-        cout << "Unable to read config";
+        cout << "Unable to read config" << endl;
         return nullptr;
     }
 }
@@ -242,8 +243,6 @@ int main(void) {
 
     // Read in the config file
     json config = read_config();
-
-    cout << typeid(config["netmask"]).name() << endl;
 
     if (config["ipv4_addr"] != nullptr) {
         serv.ipv4_addr = config["ipv4_addr"];
