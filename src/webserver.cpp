@@ -269,7 +269,7 @@ int main(void) {
 
     // Begin the heartbeat to the master if backup
     if (!is_backup) {
-        std::thread thd1 = hBeat->apr_checkThread();
+        std::thread thd1 = hBeat->arp_checkThread();
     }
     else {
 	// TODO
