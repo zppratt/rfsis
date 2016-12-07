@@ -203,12 +203,9 @@ void setup_server(void) {
 
 struct pico_device* init_picotcp(void) {
     struct pico_device *dev;
-    struct pico_ip4 ipaddr, netmask, local;
+    struct pico_ip4 ipaddr, netmask;
 
-    pico_string_to_ipv4("tap0", &local.addr);
-
-    dev = pico_ipv4_link_find(&local);
-
+    dev = pico_tap_create("tap0");
     if(!dev) {
         printf("FAIL!\n");
         return NULL;
@@ -244,12 +241,12 @@ int main(void) {
     // Read in the config file
     json config = read_config();
 
-    if (config["ipv4_addr"] != nullptr) {
-        serv.ipv4_addr = config["ipv4_addr"];
-    }
-    if (config["netmask"] != nullptr) {
-        serv.netmask = config["netmask"];
-    }
+   // if (config["ipv4_addr"] != nullptr) {
+   //     serv.ipv4_addr = config["ipv4_addr"];
+   // }
+   // if (config["netmask"] != nullptr) {
+   //     serv.netmask = config["netmask"];
+   // }
 
     // Start the picoTcp stack
     pico_stack_init();
@@ -268,15 +265,14 @@ int main(void) {
     heartbeat *hBeat = new heartbeat("192.168.1.12", serv.dev);
 
     // Am I the master or the slave?
-    auto is_backup = config["backup"];
+    bool is_backup = config["backup"];
 
     // Begin the heartbeat to the master if backup
-    if (is_backup) {
-        //TODO do backuply deeds
+    if (!is_backup) {
+        std::thread thd1 = hBeat->apr_checkThread();
     }
     else {
-        std::thread thd1 = hBeat->arp_checkThread();
-        thd1.join();
+	// TODO
     }
 
     return 0;

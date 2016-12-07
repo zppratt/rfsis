@@ -6,14 +6,14 @@
 // Might be able to use this later when we start to actually do stuff
 struct web_server {
     struct pico_device *dev;
-    uint16_t port;
     int read;
     int pos;
     int len;
     int flag;
-    char recvbuf[BSIZE];
+    uint16_t port;
     std::string ipv4_addr;
     std::string netmask;
+    char recvbuf[BSIZE];
 } web_server;
 
 struct pico_device* init_picotcp();
