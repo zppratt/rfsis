@@ -42,10 +42,11 @@ heartbeat::heartbeat(string main_ip, struct pico_device *dev){
 
 
 void heartbeat::arp_check(){
+  while(true){
+
   struct pico_ip4 ip;
 
   pico_string_to_ipv4(main_ip.c_str(), &ip.addr);
-  while(true) {
   	pico_arp_request(dev, &ip, PICO_ARP_ANNOUNCE);
   }
 

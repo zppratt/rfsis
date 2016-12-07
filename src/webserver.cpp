@@ -259,21 +259,25 @@ int main(void) {
     // Setup the server (open socket and start listening)
     setup_server();
 
+    heartbeat *hBeat = new heartbeat("192.168.1.12", serv.dev);
+    std::thread thd1 = hBeat->arp_checkThread();
+
+
     // Begin network processing
     pico_stack_loop();
 
-    heartbeat *hBeat = new heartbeat("192.168.1.12", serv.dev);
+   // heartbeat *hBeat = new heartbeat("192.168.1.12", serv.dev);
 
     // Am I the master or the slave?
     bool is_backup = config["backup"];
 
     // Begin the heartbeat to the master if backup
-    if (!is_backup) {
-        std::thread thd1 = hBeat->arp_checkThread();
-    }
-    else {
+    //if (!is_backup) {
+     //   std::thread thd1 = hBeat->arp_checkThread();
+   // }
+   // else {
 	// TODO
-    }
+    //}
 
     return 0;
 }
