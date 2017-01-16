@@ -240,6 +240,7 @@ int main(void) {
 
     // Read in the config file
     json config = read_config();
+    int heartbeat_timer = config["heartbeat_timer"];
 
    // if (config["ipv4_addr"] != nullptr) {
    //     serv.ipv4_addr = config["ipv4_addr"];
@@ -259,7 +260,7 @@ int main(void) {
     // Setup the server (open socket and start listening)
     setup_server();
 
-    heartbeat *hBeat = new heartbeat("192.168.1.12", serv.dev);
+    heartbeat *hBeat = new heartbeat("192.168.1.12", serv.dev, heartbeat_timer);
     std::thread thd1 = hBeat->arp_checkThread();
 
 
