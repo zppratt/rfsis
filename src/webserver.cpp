@@ -240,14 +240,11 @@ int main(void) {
 
     // Read in the config file
     json config = read_config();
+    bool is_backup = config["backup"];
     int heartbeat_timer = config["heartbeat_timer"];
-
-   // if (config["ipv4_addr"] != nullptr) {
-   //     serv.ipv4_addr = config["ipv4_addr"];
-   // }
-   // if (config["netmask"] != nullptr) {
-   //     serv.netmask = config["netmask"];
-   // }
+    std::string ip_addr = config["ipv4_addr"];
+    std::string netmask = config["netmask"];
+    std::string backup_addr = config["backup_addr"];
 
     // Start the picoTcp stack
     pico_stack_init();
@@ -260,25 +257,10 @@ int main(void) {
     // Setup the server (open socket and start listening)
     setup_server();
 
-    heartbeat *hBeat = new heartbeat("192.168.1.12", serv.dev, heartbeat_timer);
+    heartbeat *hBeat = new heartbeat(backup_addr, serv.dev, heartbeat_timer);
     std::thread thd1 = hBeat->arp_checkThread();
 
-
-    // Begin network processing
     pico_stack_loop();
-
-   // heartbeat *hBeat = new heartbeat("192.168.1.12", serv.dev);
-
-    // Am I the master or the slave?
-    bool is_backup = config["backup"];
-
-    // Begin the heartbeat to the master if backup
-    //if (!is_backup) {
-     //   std::thread thd1 = hBeat->arp_checkThread();
-   // }
-   // else {
-	// TODO
-    //}
 
     return 0;
 }
