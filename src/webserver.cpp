@@ -205,7 +205,7 @@ struct pico_device* init_picotcp(void) {
     struct pico_device *dev;
     struct pico_ip4 ipaddr, netmask;
 
-    dev = pico_tap_create("tap0");
+    dev = pico_tap_create("tap3");
     if(!dev) {
         printf("FAIL!\n");
         return NULL;
