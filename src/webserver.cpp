@@ -223,6 +223,7 @@ char * read_tap_name() {
     char * tap_device_name;
     tap_device_name = (char *) malloc(sizeof(char) * len);
     strncpy(tap_device_name, tap_name_cstr, len);
+    tap_device_name[len] = 0;
     return tap_device_name;
 }
 
