@@ -25,6 +25,21 @@ using namespace std;
 
 string p_website = "src/website.html";
 
+/**
+ * The configuration as a json object. Initialized in main.
+ */
+json config;
+
+/**
+ * Whether debug mode is enabled.
+ */
+bool DEBUG_MODE_ON = false;
+
+/**
+ * The name of the tap device to use.
+ */
+string tap_device_name = "tap0";
+
 extern int errno;
 
 struct web_server serv = {
@@ -201,11 +216,27 @@ void setup_server(void) {
     }
 }
 
+char * read_tap_name() {
+    std::string config_tap_name = config["tap_device_name"]; // json library will only read in a string
+    const char * tap_name_cstr = config_tap_name.c_str();
+    size_t len = strlen(tap_name_cstr);
+    char * tap_device_name;
+    tap_device_name = (char *) malloc(sizeof(char) * len);
+    strncpy(tap_device_name, tap_name_cstr, len);
+    return tap_device_name;
+}
+
 struct pico_device* init_picotcp(void) {
     struct pico_device *dev;
     struct pico_ip4 ipaddr, netmask;
 
-    dev = pico_tap_create("tap3");
+    char * device_name = read_tap_name();
+    if (DEBUG_MODE_ON == true) {
+        cout << "Creating device: " << device_name << endl;
+    }
+    dev = pico_tap_create(device_name);
+    free(device_name);
+
     if(!dev) {
         printf("FAIL!\n");
         return NULL;
@@ -239,7 +270,11 @@ json read_config() {
 int main(void) {
 
     // Read in the config file
-    json config = read_config();
+    config = read_config();
+    DEBUG_MODE_ON = config["debug_mode"];
+    if (DEBUG_MODE_ON == true) {
+        cout << "DEBUG IS ON" << endl;
+    }
     bool is_backup = config["backup"];
     int heartbeat_timer = config["heartbeat_timer"];
     std::string ip_addr = config["ipv4_addr"];
