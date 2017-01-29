@@ -53,6 +53,12 @@ struct web_server serv = {
     "255.255.255.0"
 };
 
+void log_debug(string message) {
+  if (DEBUG_MODE_ON) {
+    cout << message << endl;
+  }
+}
+
 void deferred_exit(pico_time __attribute__((unused)) now, void *arg) {
     if (arg) {
         free(arg);
@@ -202,18 +208,24 @@ void setup_server(void) {
         printf("Could not open socket!\n");
         exit(1);
     }
+    log_debug("Socket successfully opened.");
 
     ret = pico_socket_bind(listen_socket, &address, &port);
     if (ret < 0) {
         printf("could not bind socket\n");
         exit(1);
     }
+    std::string s;
+    s.append("Socket successfully bound to port ");
+    s.append(std::to_string(port));
+    log_debug(s);
 
     ret = pico_socket_listen(listen_socket, 40);
     if (ret < 0) {
         printf("could not listen\n");
         exit(1);
     }
+    log_debug("Successfully listening on socket.");
 }
 
 char * read_tap_name() {
@@ -273,10 +285,13 @@ int main(void) {
     // Read in the config file
     config = read_config();
     DEBUG_MODE_ON = config["debug_mode"];
-    if (DEBUG_MODE_ON == true) {
-        cout << "DEBUG IS ON" << endl;
-    }
+    log_debug("DEBUG MODE IS ON");
     bool is_backup = config["backup"];
+    if (is_backup) {
+      log_debug("Currently operating as the backup server.");
+    } else {
+      log_debug("Currently operating as the main server.");
+    }
     int heartbeat_timer = config["heartbeat_timer"];
     std::string ip_addr = config["ipv4_addr"];
     std::string netmask = config["netmask"];
