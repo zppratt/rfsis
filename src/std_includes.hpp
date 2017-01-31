@@ -15,6 +15,11 @@ extern "C" {
 #include "pico_icmp4.h"
 }
 
+#include "echoserver.hpp"
+#include "heartbeat.hpp"
+#include "ConfigParser.hpp"
+// #include "arpsniffer.hpp"
+
 /**
  * Whether debug mode is enabled.
  */
