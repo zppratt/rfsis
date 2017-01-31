@@ -228,36 +228,30 @@ void setup_server(void) {
     log_debug("Successfully listening on socket.");
 }
 
-char * read_tap_name() {
-    std::string config_tap_name = config["tap_device_name"]; // json library will only read in a string
-    const char * tap_name_cstr = config_tap_name.c_str();
-    size_t len = strlen(tap_name_cstr);
-    char * tap_device_name;
-    tap_device_name = (char *) malloc(sizeof(char) * len);
-    strncpy(tap_device_name, tap_name_cstr, len);
-    tap_device_name[len] = 0;
-    return tap_device_name;
-}
-
 struct pico_device* init_picotcp(void) {
     struct pico_device *dev;
     struct pico_ip4 ipaddr, netmask;
 
-    char * device_name = read_tap_name();
-    if (DEBUG_MODE_ON == true) {
-        cout << "Creating device: " << device_name << endl;
-    }
+    std::string c_dev = config["tap_device_name"];
+    char * device_name = c_dev.c_str();;
     dev = pico_tap_create(device_name);
-    free(device_name);
+    log_debug("[DEBUG:237] =======> Creating network interface on " + c_dev);
 
+    free(device_name);
     if(!dev) {
-        printf("FAIL!\n");
+        printf("[ERROR:237] =======> Could not create tap device. FATAL!!!!\n");
         return NULL;
     }
 
-    pico_string_to_ipv4(serv.ipv4_addr.c_str(), &ipaddr.addr);
-    pico_string_to_ipv4(serv.netmask.c_str(), &netmask.addr);
+    std::string address = config["ipv4_addr"];
+    std::string netm = config["netmask"];
+
+    pico_string_to_ipv4(address.c_str(), &ipaddr.addr);
+    pico_string_to_ipv4(netm.c_str(), &netmask.addr);
     pico_ipv4_link_add(dev, ipaddr, netmask);
+    log_debug("[DEBUG:248] =======> Adding device " + c_dev + " PicoTCP's link layer");
+    log_debug("[DEBUG:248] =======> Adding IP Adress " + address + " PicoTCP's link layer");
+    log_debug("[DEBUG:248] =======> Adding Netmask " + netm + " PicoTCP's link layer");
 
     return dev;
 }
@@ -285,33 +279,38 @@ int main(void) {
     // Read in the config file
     config = read_config();
     DEBUG_MODE_ON = config["debug_mode"];
-    log_debug("DEBUG MODE IS ON");
-    bool is_backup = config["backup"];
-    if (is_backup) {
-      log_debug("Currently operating as the backup server.");
-    } else {
-      log_debug("Currently operating as the main server.");
-    }
     int heartbeat_timer = config["heartbeat_timer"];
-    std::string ip_addr = config["ipv4_addr"];
-    std::string netmask = config["netmask"];
     std::string backup_addr = config["backup_addr"];
+    bool heartbeat_ctl = config["main_heartbeats"]; //If the main_heartbeats = true the main server intializes the arps
+    bool is_backup = config["backup"];
+    log_debug("[DEBUG:287] =======> Debug mode = on"); //Is debug mode on, if it is say something
 
-    // Start the picoTcp stack
-    pico_stack_init();
-    serv.dev = init_picotcp();
-    if(!serv.dev) {
-        printf("Could not make device!\n");
-        return -1;
+
+    if (is_backup) {
+      log_debug("[DEBUG:296] =======> is_backup = true, server state is backup");
+      if(heartbeat_ctl){
+        log_debug("[DEBUG:299] =======> heartbeat_ctl = true, backup will listen for ARPs");
+      } else{
+        log_debug("[DEBUG:299] =======> heartbeat_ctl = false, backup will initialize ARPs");
+      }
+    } else {
+      log_debug("[DEBUG:304] =======> is_backup = false, server state is main");
+      // Start the picoTcp stack
+      pico_stack_init();
+      log_debug("[DEBUG:307] =======> function call = pico_stack_init(), initalizing picoTCP IP-Stack");
+      serv.dev = init_picotcp();
+      setup_server();
+
+      if(heartbeat_ctl){
+        log_debug("[DEBUG:299] =======> heartbeat_ctl = true, main will initalize ARPs");
+        heartbeat *hBeat = new heartbeat(backup_addr, serv.dev, heartbeat_timer);
+        std::thread thd1 = hBeat->arp_checkThread();
+      } else{
+        log_debug("[DEBUG:299] =======> heartbeat_ctl = false, main will listen for ARPs");
+      }
+
+        pico_stack_loop();
     }
-
-    // Setup the server (open socket and start listening)
-    setup_server();
-
-    heartbeat *hBeat = new heartbeat(backup_addr, serv.dev, heartbeat_timer);
-    std::thread thd1 = hBeat->arp_checkThread();
-
-    pico_stack_loop();
 
     return 0;
 }
