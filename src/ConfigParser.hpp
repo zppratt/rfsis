@@ -18,6 +18,7 @@ public:
   bool getBackup();
   string getBackup_Addr();
   string getIpv4_Addr();
+  int getPort();
   string getNetmask();
   int getHeartbeat_Timer();
   bool getDebug_Mode();
@@ -28,6 +29,7 @@ private:
   bool backup;
   string backup_addr;
   string ipv4_addr;
+  int port;
   string netmask;
   int heartbeat_timer;
   bool debug_mode;
@@ -77,6 +79,10 @@ string ConfigParser::getBackup_Addr(){
 
 string ConfigParser::getIpv4_Addr(){
   return ipv4_addr;
+}
+
+string ConfigParser::getPort(){
+  return port;
 }
 
 string ConfigParser::getNetmask(){
