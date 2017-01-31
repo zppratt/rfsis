@@ -15,13 +15,14 @@ extern "C" {
 #include "pico_icmp4.h"
 }
 
-#include "webserver.h"
+#include "echoserver.h"
 #include "heartbeat.hpp"
 #include "ConfigParser.hpp"
+// #include "arpsniffer.hpp"
+
 
 using namespace std;
 
-string p_website = "src/website.html";
 
 /**
  * Whether debug mode is enabled.
@@ -29,10 +30,12 @@ string p_website = "src/website.html";
 
 bool DEBUG_MODE_ON = false;
 
+ConfigParser conf;
+
 
 extern int errno;
 
-struct web_server serv = {
+struct echo_server serv = {
     NULL,
     0,
     0,
@@ -245,11 +248,21 @@ int main(void) {
 
     if (conf.getBackup()) {
       log_debug("[DEBUG:296] =======> backup = true, server state is backup");
+
+      pico_stack_init();
+      serv.dev = init_picotcp();
+      setup_server();
+
       if(conf.getMain_Heartbeats()){
         log_debug("[DEBUG:299] =======> main_heartbeats = true, backup will listen for ARPs");
       } else{
         log_debug("[DEBUG:299] =======> main_heartbeats = false, backup will initialize ARPs");
+        heartbeat *hBeat = new heartbeat(conf.getIpv4_Addr(), serv.dev, conf.getHeartbeat_Timer());
+        std::thread thd1 = hBeat->arp_checkThread();
       }
+
+      pico_stack_loop();
+
     } else {
       log_debug("[DEBUG:304] =======> backup = false, server state is main");
       // Start the picoTcp stack
