@@ -12,6 +12,7 @@ using std::map;
 using std::bind;
 
 using namespace Tins;
+using namespace std;
 
 class arp_monitor {
 public:
