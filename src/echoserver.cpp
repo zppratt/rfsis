@@ -51,128 +51,69 @@ void deferred_exit(pico_time __attribute__((unused)) now, void *arg) {
     exit(0);
 }
 
-int read_html_file(struct pico_socket *s) {
-    // Since the compiler cant tell the difference between read and read
-    int red = 0;
-    char buffer[BSIZE];
-
-    // We want to use a file descriptors because we want to treat
-    // the file as a stream instead of with handlers
-    int fd = open(p_website.c_str(), O_RDONLY);
-    if(fd < 0) {
-        printf("ERROR: %s\n", strerror(errno));
-        return -1;
-    }
-
-    while((red = read(fd, buffer, sizeof(buffer))) != 0) {
-        if(red < 0) {
-            printf("ERROR: %s\n", strerror(errno));
-            return -1;
-        }
-        pico_socket_write(s, buffer, red);
-    }
-
-    close(fd);
-
-    return red;
-}
-
 void cb_tcpserver(uint16_t ev, struct pico_socket *s) {
+  char recvbuf[BSIZE];
+  int read = 0, written = 0;
+  int pos = 0, len = 0;
+  struct pico_socket *sock_a;
+  struct pico_ip4 orig;
+  uint16_t port;
+  char peer[30];
 
-    printf("tcpecho | env = %u\n", ev);
+  /* process read event, data available */
+  if (ev & PICO_SOCK_EV_RD) {
+    do {
+      read = pico_socket_read(s, recvbuf + len, BSIZE - len);
+      if (read > 0)
+        len += r;
+    } while(read > 0);
+  }
 
-    if (ev & PICO_SOCK_EV_RD) {
-        if (serv.flag & PICO_SOCK_EV_CLOSE) {
-            printf("Fin received!\n");
+  /* process connect event, syn received */
+  if (ev & PICO_SOCK_EV_CONN) {
+    /* accept new connection request */
+    sock_a = pico_socket_accept(s, &orig, &port);
+    /* convert peer IP to string */
+    pico_ipv4_to_string(peer, orig.addr);
+    /* print info */
+    printf("Connection established with %s:%d.\n", peer, short_be(port));
+  }
+
+  /* process fin event, receiving socket closed */
+  if (ev & PICO_SOCK_EV_FIN) {
+    printf("Socket closed. Exit normally. \n");
+  }
+
+  /* process error event, socket error occured */
+  if (ev & PICO_SOCK_EV_ERR) {
+    printf("Socket Error received: %s. Bailing out.\n", strerror(pico_err));
+    exit(1);
+  }
+
+  /* process close event, receiving socket received close from peer */
+  if (ev & PICO_SOCK_EV_CLOSE) {
+    printf("Socket received close from peer.\n");
+    /* shutdown write side of socket */
+    pico_socket_shutdown(s, PICO_SHUT_WR);
+  }
+
+  /* if data read, echo back */
+  if (len > pos) {
+    do {
+      /* echo data back to peer */
+      written = pico_socket_write(s, recvbuf + pos, len - pos);
+      if (written > 0) {
+        pos += written;
+        if (pos >= len) {
+          pos = 0;
+          len = 0;
+          written = 0;
         }
-
-        while (serv.len < BSIZE) {
-            serv.read = pico_socket_read(s, serv.recvbuf + serv.len, BSIZE - serv.len);
-            if (serv.read > 0) {
-                serv.len += serv.read;
-                serv.flag &= ~(PICO_SOCK_EV_RD);
-            } else {
-                serv.flag |= PICO_SOCK_EV_RD;
-                break;
-            }
-        }
-
-        if (serv.flag & PICO_SOCK_EV_WR) {
-            serv.flag &= ~PICO_SOCK_EV_WR;
-            send_resp(s);
-        }
-    }
-
-    if (ev & PICO_SOCK_EV_CONN) {
-        struct pico_socket *sock_a = {0};
-        struct pico_ip4 orig       = {0};
-        uint16_t port              = 0;
-        char peer[30]              = {0};
-        uint32_t ka_val            = 0;
-        int yes                    = 1;
-
-        sock_a = pico_socket_accept(s, &orig, &port);
-
-        pico_ipv4_to_string(peer, orig.addr);
-        printf("Connection established with %s:%d\n", peer, short_be(port));
-        pico_socket_setoption(sock_a, PICO_TCP_NODELAY, &yes);
-
-        ka_val = 5;
-        pico_socket_setoption(sock_a, PICO_SOCKET_OPT_KEEPCNT, &ka_val);
-
-        ka_val = 30000;
-        pico_socket_setoption(sock_a, PICO_SOCKET_OPT_KEEPIDLE, &ka_val);
-
-        ka_val = 5000;
-        pico_socket_setoption(sock_a, PICO_SOCKET_OPT_KEEPINTVL, &ka_val);
-
-    }
-
-    if (ev & PICO_SOCK_EV_FIN) {
-        printf("Socket closed. Exiting normally\n");
-        pico_timer_add(2000, deferred_exit, NULL);
-    }
-
-    if (ev & PICO_SOCK_EV_ERR) {
-        printf("Socket error: %s. Time to quit this shiznit!\n",
-                strerror(pico_err));
-        exit(1);
-    }
-
-    if (ev & PICO_SOCK_EV_CLOSE) {
-        printf("Socket received close from peer.\n");
-        if (serv.flag & PICO_SOCK_EV_RD) {
-            pico_socket_shutdown(s, PICO_SHUT_WR);
-            printf("Called shutdown write, ev = %d\n", ev);
-        }
-
-    }
-
-    if (ev & PICO_SOCK_EV_WR) {
-        read_html_file(s);
-        pico_socket_shutdown(s, PICO_SHUT_WR);
-    }
-}
-
-
-int send_resp(struct pico_socket *s) {
-    int w, ww = 0;
-
-    if (serv.len >  serv.pos) {
-        do {
-            w = pico_socket_write(s, serv.recvbuf + serv.pos, serv.len - serv.pos);
-            if (w > 0) {
-                serv.pos += w;
-                ww += w;
-                if (serv.pos >= serv.len) {
-                    serv.pos = 0;
-                    serv.len = 0;
-                }
-            }
-        } while ((w > 0) && (serv.pos < serv.len));
-    }
-
-    return ww;
+      } else {
+        printf("SOCKET> ECHO write failed, dropped %d bytes\n",(len-pos));
+      }
+    } while(written > 0);
+  }
 }
 
 void setup_server(void) {
