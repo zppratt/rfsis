@@ -1,20 +1,4 @@
-#include <time.h>
-#include <stdio.h>
-#include <fcntl.h>
-#include <fstream>
-#include <errno.h>
-#include <iostream>
-#include <string>
-
-extern "C" {
-#include "pico_device.h"
-#include "pico_ipv4.h"
-#include "pico_stack.h"
-#include "pico_socket.h"
-#include "pico_dev_tap.h"
-#include "pico_icmp4.h"
-}
-
+#include "std_includes.hpp"
 #include "echoserver.h"
 #include "heartbeat.hpp"
 #include "ConfigParser.hpp"
@@ -22,24 +6,10 @@ extern "C" {
 
 
 using namespace std;
-
-
-/**
- * Whether debug mode is enabled.
- */
-
-bool DEBUG_MODE_ON = false;
-
-ConfigParser conf;
-
-
 extern int errno;
 
-void log_debug(string message) {
-  if (DEBUG_MODE_ON) {
-    cout << message << endl;
-  }
-}
+bool DEBUG_MODE_ON;
+ConfigParser conf;
 
 void deferred_exit(pico_time __attribute__((unused)) now, void *arg) {
     if (arg) {
@@ -116,7 +86,7 @@ void cb_tcpserver(uint16_t ev, struct pico_socket *s) {
   }
 }
 
-void setup_server(void) {
+void start_server(void) {
     struct pico_socket *listen_socket;
     uint16_t port;
     int ret;
@@ -150,29 +120,29 @@ void setup_server(void) {
     log_debug("[DEBUG:212} =======> Successfully listening on socket.");
 }
 
-struct pico_device* init_picotcp(void) {
-    struct pico_device *dev;
-    struct pico_ip4 ipaddr, netmask;
-
-    char * device_name = conf.getTap_Device_name().c_str();
-    dev = pico_tap_create(device_name);
-    log_debug("[DEBUG:237] =======> Creating network interface on " + conf.getTap_Device_name());
-
-    free(device_name);
-    if(!dev) {
-        printf("[ERROR:237] =======> Could not create tap device. FATAL!!!!\n");
-        return NULL;
-    }
-
-    pico_string_to_ipv4(conf.getIpv4_Addr().c_str(), &ipaddr.addr);
-    pico_string_to_ipv4(conf.getNetmask().c_str(), &netmask.addr);
-    pico_ipv4_link_add(dev, ipaddr, netmask);
-    log_debug("[DEBUG:248] =======> Adding device " + conf.getTap_Device_name() + " PicoTCP's link layer");
-    log_debug("[DEBUG:248] =======> Adding IP Adress " + conf.getIpv4_Addr() + " PicoTCP's link layer");
-    log_debug("[DEBUG:248] =======> Adding Netmask " + conf.getNetmask() + " PicoTCP's link layer");
-
-    return dev;
-}
+// struct pico_device* init_picotcp(void) {
+//     struct pico_device *dev;
+//     struct pico_ip4 ipaddr, netmask;
+//
+//     char * device_name = conf.getTap_Device_name().c_str();
+//     dev = pico_tap_create(device_name);
+//     log_debug("[DEBUG:237] =======> Creating network interface on " + conf.getTap_Device_name());
+//
+//     free(device_name);
+//     if(!dev) {
+//         printf("[ERROR:237] =======> Could not create tap device. FATAL!!!!\n");
+//         return NULL;
+//     }
+//
+//     pico_string_to_ipv4(conf.getIpv4_Addr().c_str(), &ipaddr.addr);
+//     pico_string_to_ipv4(conf.getNetmask().c_str(), &netmask.addr);
+//     pico_ipv4_link_add(dev, ipaddr, netmask);
+//     log_debug("[DEBUG:248] =======> Adding device " + conf.getTap_Device_name() + " PicoTCP's link layer");
+//     log_debug("[DEBUG:248] =======> Adding IP Adress " + conf.getIpv4_Addr() + " PicoTCP's link layer");
+//     log_debug("[DEBUG:248] =======> Adding Netmask " + conf.getNetmask() + " PicoTCP's link layer");
+//
+//     return dev;
+// }
 
 int main(void) {
 
@@ -183,7 +153,7 @@ int main(void) {
       log_debug("[DEBUG:296] =======> backup = true, server state is backup");
 
       pico_stack_init();
-      serv.dev = init_picotcp();
+      conf.setDev(init_picotcp());
       setup_server();
 
       if(conf.getMain_Heartbeats()){
