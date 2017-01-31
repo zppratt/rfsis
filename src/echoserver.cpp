@@ -1,10 +1,12 @@
 #include "std_includes.hpp"
+#include "echoserver.hpp"
+
+
 
 using namespace std;
 extern int errno;
 
-bool DEBUG_MODE_ON;
-ConfigParser conf;
+
 
 int main(void) {
 
@@ -16,7 +18,7 @@ int main(void) {
 
       pico_stack_init();
       conf.setDev(init_picotcp());
-      setup_server();
+      start_server();
 
       if(conf.getMain_Heartbeats()){
         log_debug("[DEBUG:299] =======> main_heartbeats = true, backup will listen for ARPs");
@@ -34,7 +36,7 @@ int main(void) {
       pico_stack_init();
       log_debug("[DEBUG:307] =======> function call = pico_stack_init(), initalizing picoTCP IP-Stack");
       conf.setDev(init_picotcp());
-      setup_server();
+      start_server();
 
       if(conf.getMain_Heartbeats()){
         log_debug("[DEBUG:299] =======> main_heartbeats = true, main will initalize ARPs");

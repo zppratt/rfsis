@@ -1,7 +1,6 @@
 #ifndef _CONFIG_PARSER_H_
 #define _CONFIG_PARSER_H_
 
-#include <json/json.h>
 #include "json.hpp"
 #include <iostream>
 #include <string>
@@ -24,7 +23,7 @@ public:
   bool getDebug_Mode();
   string getTap_Device_name();
   bool getMain_Heartbeats();
-  void setDev(struct pico_device *dev);
+  void setDev(struct pico_device *device);
   struct pico_device *getDev();
 
 private:
@@ -85,7 +84,7 @@ string ConfigParser::getIpv4_Addr(){
   return ipv4_addr;
 }
 
-string ConfigParser::getPort(){
+int ConfigParser::getPort(){
   return port;
 }
 
@@ -109,10 +108,10 @@ bool ConfigParser::getMain_Heartbeats(){
   return main_heartbeats;
 }
 
-void setDev(struct pico_device *dev){
-  this->dev = dev;
+void ConfigParser::setDev(struct pico_device *device){
+  dev = device;
 }
-struct pico_device *getDev(){
+struct pico_device *ConfigParser::getDev(){
   return dev;
 }
 

@@ -1,3 +1,6 @@
+#ifndef _STD_INCLUDES_H_
+#define _STD_INCLUDES_H_
+
 #include <time.h>
 #include <stdio.h>
 #include <fcntl.h>
@@ -15,7 +18,6 @@ extern "C" {
 #include "pico_icmp4.h"
 }
 
-#include "echoserver.hpp"
 #include "heartbeat.hpp"
 #include "ConfigParser.hpp"
 // #include "arpsniffer.hpp"
@@ -24,11 +26,13 @@ extern "C" {
  * Whether debug mode is enabled.
  */
 
-extern bool DEBUG_MODE_ON;
-extern ConfigParser conf;
+bool DEBUG_MODE_ON;
+ConfigParser conf;
 
 void log_debug(string message) {
   if (DEBUG_MODE_ON) {
     cout << message << endl;
   }
 }
+
+#endif
