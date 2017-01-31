@@ -17,28 +17,18 @@ extern "C" {
 
 #include "webserver.h"
 #include "heartbeat.hpp"
-#include "json.hpp"
+#include "ConfigParser.hpp"
 
-// for convenience
-using json = nlohmann::json;
 using namespace std;
 
 string p_website = "src/website.html";
 
 /**
- * The configuration as a json object. Initialized in main.
- */
-json config;
-
-/**
  * Whether debug mode is enabled.
  */
+
 bool DEBUG_MODE_ON = false;
 
-/**
- * The name of the tap device to use.
- */
-string tap_device_name = "tap0";
 
 extern int errno;
 
@@ -232,10 +222,9 @@ struct pico_device* init_picotcp(void) {
     struct pico_device *dev;
     struct pico_ip4 ipaddr, netmask;
 
-    std::string c_dev = config["tap_device_name"];
-    char * device_name = c_dev.c_str();;
+    char * device_name = conf.getTap_Device_name().c_str();
     dev = pico_tap_create(device_name);
-    log_debug("[DEBUG:237] =======> Creating network interface on " + c_dev);
+    log_debug("[DEBUG:237] =======> Creating network interface on " + conf.getTap_Device_name());
 
     free(device_name);
     if(!dev) {
@@ -243,70 +232,42 @@ struct pico_device* init_picotcp(void) {
         return NULL;
     }
 
-    std::string address = config["ipv4_addr"];
-    std::string netm = config["netmask"];
-
-    pico_string_to_ipv4(address.c_str(), &ipaddr.addr);
-    pico_string_to_ipv4(netm.c_str(), &netmask.addr);
+    pico_string_to_ipv4(conf.getIpv4_Addr().c_str(), &ipaddr.addr);
+    pico_string_to_ipv4(conf.getNetmask().c_str(), &netmask.addr);
     pico_ipv4_link_add(dev, ipaddr, netmask);
-    log_debug("[DEBUG:248] =======> Adding device " + c_dev + " PicoTCP's link layer");
-    log_debug("[DEBUG:248] =======> Adding IP Adress " + address + " PicoTCP's link layer");
-    log_debug("[DEBUG:248] =======> Adding Netmask " + netm + " PicoTCP's link layer");
+    log_debug("[DEBUG:248] =======> Adding device " + conf.getTap_Device_name() + " PicoTCP's link layer");
+    log_debug("[DEBUG:248] =======> Adding IP Adress " + conf.getIpv4_Addr() + " PicoTCP's link layer");
+    log_debug("[DEBUG:248] =======> Adding Netmask " + conf.getNetmask() + " PicoTCP's link layer");
 
     return dev;
 }
 
-json read_config() {
-    json res;
-    ifstream myfile ("src/config.json");
-
-    if (myfile.is_open())
-    {
-        string content( (std::istreambuf_iterator<char>(myfile) ),
-                (std::istreambuf_iterator<char>()    ) );
-        res = json::parse(content);
-        myfile.close();
-        return res;
-    }
-    else {
-        cout << "Unable to read config" << endl;
-        return nullptr;
-    }
-}
-
 int main(void) {
 
-    // Read in the config file
-    config = read_config();
-    DEBUG_MODE_ON = config["debug_mode"];
-    int heartbeat_timer = config["heartbeat_timer"];
-    std::string backup_addr = config["backup_addr"];
-    bool heartbeat_ctl = config["main_heartbeats"]; //If the main_heartbeats = true the main server intializes the arps
-    bool is_backup = config["backup"];
+    DEBUG_MODE_ON = conf.getDebug_Mode();
     log_debug("[DEBUG:287] =======> Debug mode = on"); //Is debug mode on, if it is say something
 
-
-    if (is_backup) {
-      log_debug("[DEBUG:296] =======> is_backup = true, server state is backup");
-      if(heartbeat_ctl){
-        log_debug("[DEBUG:299] =======> heartbeat_ctl = true, backup will listen for ARPs");
+    if (conf.getBackup()) {
+      log_debug("[DEBUG:296] =======> backup = true, server state is backup");
+      if(conf.getMain_Heartbeats()){
+        log_debug("[DEBUG:299] =======> main_heartbeats = true, backup will listen for ARPs");
       } else{
-        log_debug("[DEBUG:299] =======> heartbeat_ctl = false, backup will initialize ARPs");
+        log_debug("[DEBUG:299] =======> main_heartbeats = false, backup will initialize ARPs");
       }
     } else {
-      log_debug("[DEBUG:304] =======> is_backup = false, server state is main");
+      log_debug("[DEBUG:304] =======> backup = false, server state is main");
       // Start the picoTcp stack
       pico_stack_init();
       log_debug("[DEBUG:307] =======> function call = pico_stack_init(), initalizing picoTCP IP-Stack");
       serv.dev = init_picotcp();
       setup_server();
 
-      if(heartbeat_ctl){
-        log_debug("[DEBUG:299] =======> heartbeat_ctl = true, main will initalize ARPs");
-        heartbeat *hBeat = new heartbeat(backup_addr, serv.dev, heartbeat_timer);
+      if(conf.getMain_Heartbeats()){
+        log_debug("[DEBUG:299] =======> main_heartbeats = true, main will initalize ARPs");
+        heartbeat *hBeat = new heartbeat(conf.getBackup_Addr(), serv.dev, conf.getHeartbeat_Timer());
         std::thread thd1 = hBeat->arp_checkThread();
       } else{
-        log_debug("[DEBUG:299] =======> heartbeat_ctl = false, main will listen for ARPs");
+        log_debug("[DEBUG:299] =======> main_heartbeats = false, main will listen for ARPs");
       }
 
         pico_stack_loop();

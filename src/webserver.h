@@ -16,11 +16,14 @@ struct web_server {
     char recvbuf[BSIZE];
 } web_server;
 
+
+
 struct pico_device* init_picotcp();
 
 void setup_server();
 int send_resp(struct pico_socket *s);
 void cb_tcpserver(uint16_t ev, struct pico_socket *s);
+ConfigParser conf;
 
 
 

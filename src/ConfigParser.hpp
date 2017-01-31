@@ -2,18 +2,19 @@
 #define _CONFIG_PARSER_H_
 
 #include <json/json.h>
+#include "json.hpp"
 #include <iostream>
 #include <string>
 
 /* Description: This class is used to store the configuration read in from config.json
                 for easy access later in the program. */
-                
+
 using json = nlohmann::json;
 using namespace std;
 
-class configParser{
+class ConfigParser{
 public:
-  configParser();
+  ConfigParser();
   bool getBackup();
   string getBackup_Addr();
   string getIpv4_Addr();
@@ -53,7 +54,7 @@ private:
 
 };
 
-configParser::configParser(){
+ConfigParser::ConfigParser(){
   json config = read_config();
 
   backup = config["backup"];
@@ -66,35 +67,35 @@ configParser::configParser(){
   main_heartbeats = config["main_heartbeats"];
 }
 
-bool configParser::getBackup(){
+bool ConfigParser::getBackup(){
   return backup;
 }
 
-string configParser::getBackup_Addr(){
+string ConfigParser::getBackup_Addr(){
   return backup_addr;
 }
 
-string configParser::getIpv4_Addr(){
+string ConfigParser::getIpv4_Addr(){
   return ipv4_addr;
 }
 
-string configParser::getNetmask(){
+string ConfigParser::getNetmask(){
   return netmask;
 }
 
-int configParser::getHeartbeat_Timer(){
+int ConfigParser::getHeartbeat_Timer(){
   return heartbeat_timer;
 }
 
-bool configParser::getDebug_Mode(){
+bool ConfigParser::getDebug_Mode(){
   return debug_mode;
 }
 
-string configParser::getTap_Device_name(){
+string ConfigParser::getTap_Device_name(){
   return tap_device_name;
 }
 
-bool configParser::getMain_Heartbeats(){
+bool ConfigParser::getMain_Heartbeats(){
   return main_heartbeats;
 }
 
