@@ -24,6 +24,8 @@ public:
   bool getDebug_Mode();
   string getTap_Device_name();
   bool getMain_Heartbeats();
+  void setDev(struct pico_device *dev);
+  struct pico_device *getDev();
 
 private:
   bool backup;
@@ -35,6 +37,7 @@ private:
   bool debug_mode;
   string tap_device_name;
   bool main_heartbeats;
+  struct pico_device *dev;
 
   json read_config() {
       json res;
@@ -104,6 +107,13 @@ string ConfigParser::getTap_Device_name(){
 
 bool ConfigParser::getMain_Heartbeats(){
   return main_heartbeats;
+}
+
+void setDev(struct pico_device *dev){
+  this->dev = dev;
+}
+struct pico_device *getDev(){
+  return dev;
 }
 
 #endif

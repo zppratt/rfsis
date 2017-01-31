@@ -11,7 +11,7 @@ struct echo_server {
     int len;
     int flag;
     char recvbuf[BSIZE];
-} web_server;
+} echo_server;
 
 
 

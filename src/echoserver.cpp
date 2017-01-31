@@ -35,14 +35,6 @@ ConfigParser conf;
 
 extern int errno;
 
-struct echo_server serv = {
-    NULL,
-    0,
-    0,
-    0,
-    0
-};
-
 void log_debug(string message) {
   if (DEBUG_MODE_ON) {
     cout << message << endl;
@@ -257,7 +249,7 @@ int main(void) {
         log_debug("[DEBUG:299] =======> main_heartbeats = true, backup will listen for ARPs");
       } else{
         log_debug("[DEBUG:299] =======> main_heartbeats = false, backup will initialize ARPs");
-        heartbeat *hBeat = new heartbeat(conf.getIpv4_Addr(), serv.dev, conf.getHeartbeat_Timer());
+        heartbeat *hBeat = new heartbeat(conf.getIpv4_Addr(), conf.getDev(), conf.getHeartbeat_Timer());
         std::thread thd1 = hBeat->arp_checkThread();
       }
 
@@ -268,12 +260,12 @@ int main(void) {
       // Start the picoTcp stack
       pico_stack_init();
       log_debug("[DEBUG:307] =======> function call = pico_stack_init(), initalizing picoTCP IP-Stack");
-      serv.dev = init_picotcp();
+      conf.setDev(init_picotcp());
       setup_server();
 
       if(conf.getMain_Heartbeats()){
         log_debug("[DEBUG:299] =======> main_heartbeats = true, main will initalize ARPs");
-        heartbeat *hBeat = new heartbeat(conf.getBackup_Addr(), serv.dev, conf.getHeartbeat_Timer());
+        heartbeat *hBeat = new heartbeat(conf.getBackup_Addr(), conf.getDev(), conf.getHeartbeat_Timer());
         std::thread thd1 = hBeat->arp_checkThread();
       } else{
         log_debug("[DEBUG:299] =======> main_heartbeats = false, main will listen for ARPs");
