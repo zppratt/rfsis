@@ -37,10 +37,7 @@ struct web_server serv = {
     0,
     0,
     0,
-    0,
-    8080,
-    "192.168.1.101",
-    "255.255.255.0"
+    0
 };
 
 void log_debug(string message) {

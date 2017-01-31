@@ -10,9 +10,6 @@ struct web_server {
     int pos;
     int len;
     int flag;
-    uint16_t port;
-    std::string ipv4_addr;
-    std::string netmask;
     char recvbuf[BSIZE];
 } web_server;
 
