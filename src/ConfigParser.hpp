@@ -62,6 +62,7 @@ ConfigParser::ConfigParser(){
   backup = config["backup"];
   backup_addr = config["backup_addr"];
   ipv4_addr = config["ipv4_addr"];
+  port = config["port"];
   netmask = config["netmask"];
   heartbeat_timer = config["heartbeat_timer"];
   debug_mode = config["debug_mode"];
