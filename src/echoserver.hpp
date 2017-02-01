@@ -1,13 +1,31 @@
 #ifndef _6193_ECHO_SERVER_H_
 #define _6193_ECHO_SERVER_H_
 
-#include "std_includes.hpp"
-#define BSIZE 2048
+/*
+* Description: This file contains the bulk of the code for the tcp echo application. The file also contains the prep code
+* to run the application in the picoTCP IP-Stack.
+*
+* TODO: Clean this file up to be more OOP.
+*
+* Authors: Brice Aldrich, Devin Aspy, Zach Pratt
+*/
+
+#include "std_includes.hpp" //Standard includes that we use a lot, some gloabl vars, and one gloabl debug function
+#define BSIZE 2048 //buffer size for TCP Echo
+
+//Function Declarations
 struct pico_device* init_picotcp();
 void start_server();
 void cb_tcpserver(uint16_t ev, struct pico_socket *s);
 int send_resp(struct pico_socket *s);
 void deferred_exit(pico_time __attribute__((unused)) now, void *arg);
+
+
+/*
+* Class: echoHelper
+* Description: This class is used to set and get multiple variables
+* used in our TCP echo application throughout multiple functions.
+*/
 
 class echoHelper{
 public:
@@ -27,98 +45,98 @@ private:
   int flag;
 };
 
-echoHelper::echoHelper(){
-  read = 0;
+echoHelper::echoHelper(){ //Constructor for echoHelper class
+  read = 0; //set all our private ints to 0
   pos = 0;
   len = 0;
   flag = 0;
 }
 
-void echoHelper::setRead(int read){
+void echoHelper::setRead(int read){ // read setter
   this->read = read;
 }
 
-void echoHelper::setPos(int pos){
+void echoHelper::setPos(int pos){ // pos setter
   this->pos = pos;
 }
 
-void echoHelper::setLen(int len){
+void echoHelper::setLen(int len){ // len setter
   this->len = len;
 }
 
-void echoHelper::setFlag(int flag){
+void echoHelper::setFlag(int flag){ // flag setter
   this->flag = flag;
 }
 
-int echoHelper::getRead(){
+int echoHelper::getRead(){ // read getter
   return read;
 }
 
-int echoHelper::getPos(){
+int echoHelper::getPos(){ // pos getter
   return pos;
 }
 
-int echoHelper::getLen(){
+int echoHelper::getLen(){ // len getter
   return len;
 }
 
-int echoHelper::getFlag(){
+int echoHelper::getFlag(){ // flag getter
   return flag;
 }
 
-echoHelper help;
-char recvbuf[BSIZE];
+echoHelper help; // Let's creater an echoHelper object named help
+char recvbuf[BSIZE]; // Declare our buffer of the size above for use in the TCP Echo app
 
 
 
-struct pico_device* init_picotcp(){
-  struct pico_device *dev;
-  struct pico_ip4 ipaddr, netmask;
+struct pico_device* init_picotcp(){ //Initializing picoTCP by creating a device and registering it to the stack
+  struct pico_device *dev; // Our Pico Device var
+  struct pico_ip4 ipaddr, netmask; // Pico uses weird conversions, so these are specific types pico uses for ip-address and netmask
 
-  char * device_name = const_cast<char*>(conf.getTap_Device_name().c_str());
-  dev = pico_tap_create(device_name);
+  char * device_name = const_cast<char*>(conf.getTap_Device_name().c_str()); // Let's get our device name from our config parser.
+  dev = pico_tap_create(device_name); // Create tap device with the tap name above. Typically tap0.
   log_debug("[DEBUG:79] echoserver.hpp =======> Creating network interface on " + conf.getTap_Device_name());
 
 
-  if(!dev) {
+  if(!dev) { // Check for error
       printf("[ERROR:79] echoserver.hpp =======> Could not create tap device. FATAL!!!!\n");
       return NULL;
   }
-  
-  if (conf.getBackup()){
-    pico_string_to_ipv4(conf.getBackup_Addr().c_str(), &ipaddr.addr);
-  } else{
-    pico_string_to_ipv4(conf.getIpv4_Addr().c_str(), &ipaddr.addr);
+
+  if (conf.getBackup()){ //If we are intializing the stack on the backup server
+    pico_string_to_ipv4(conf.getBackup_Addr().c_str(), &ipaddr.addr); // get the backup server address from config parser and convert and copy to pico address
+  } else{ //Else we are intializing the stack on the main server
+    pico_string_to_ipv4(conf.getIpv4_Addr().c_str(), &ipaddr.addr); // get the main server address from config parser and convert and copy to pico address
   }
 
-  pico_string_to_ipv4(conf.getNetmask().c_str(), &netmask.addr);
-  pico_ipv4_link_add(dev, ipaddr, netmask);
+  pico_string_to_ipv4(conf.getNetmask().c_str(), &netmask.addr); // Convert the netmask from our config parser to pico netmask
+  pico_ipv4_link_add(dev, ipaddr, netmask); // Link'em all together, registering them to the IP-Stack
   log_debug("[DEBUG:90] echoserver.hpp =======> Adding device " + conf.getTap_Device_name() + " PicoTCP's link layer");
   log_debug("[DEBUG:90] echoserver.hpp =======> Adding IP Adress " + conf.getIpv4_Addr() + " PicoTCP's link layer");
   log_debug("[DEBUG:90] echoserver.hpp =======> Adding Netmask " + conf.getNetmask() + " PicoTCP's link layer");
 
-  return dev;
+  return dev; //return our device
 }
 
-void start_server(){
-  struct pico_socket *listen_socket;
-  uint16_t port;
-  int ret;
+void start_server(){ // The bulk of the code for the TCP Echo app
+  struct pico_socket *listen_socket; // Creating a pico listening socket
+  uint16_t port; // our port
+  int ret; // For error checking
 
-  struct pico_ip4 address = {0};
+  struct pico_ip4 address = {0}; // our listening adress
   port = short_be(conf.getPort()); // Have to use their short be thing...
 
   listen_socket = pico_socket_open(PICO_PROTO_IPV4, PICO_PROTO_TCP,
-          &cb_tcpserver);
+          &cb_tcpserver); //Open the listening socket and call our call back function cb_tcpserver
 
-  if (!listen_socket) {
+  if (!listen_socket) { // Oops we failed to open our socket ):
       printf("[ERROR:106] echoserver.hpp =======> Could not open socket. FATAL!!!\n");
       exit(1);
   }
 
   log_debug("[DEBUG:106] echoserver.hpp =======> Socket successfully opened");
 
-  ret = pico_socket_bind(listen_socket, &address, &port);
+  ret = pico_socket_bind(listen_socket, &address, &port); // Bind the listening socket to the address and port connected.
   if (ret < 0) {
       printf("[ERROR:116] echoserver.hpp =======> Could not bind to socket. FATAL!!!\n");
       exit(1);
@@ -127,24 +145,24 @@ void start_server(){
 
 
 
-  ret = pico_socket_listen(listen_socket, 40);
-  if (ret < 0) {
+  ret = pico_socket_listen(listen_socket, 40); // Lets start listening.
+  if (ret < 0) { // We couldn't listen, like many of our beloved polititions. ):
       printf("[ERROR:125] echoserver.hpp =======> Could not listen to socket. FATAL!!!\n");
       exit(1);
   }
   log_debug("[DEBUG:125] echoserver.hpp =======> Successfully listening on socket. ret = " + std::to_string(ret));
 }
 
-void cb_tcpserver(uint16_t ev, struct pico_socket *s) {
+void cb_tcpserver(uint16_t ev, struct pico_socket *s) { //The call back function for our TCP echo app
 
     log_debug("[DEBUG:133] echoserver.hpp =======> I heard something, I better send it back!");
 
-    if (ev & PICO_SOCK_EV_RD) {
+    if (ev & PICO_SOCK_EV_RD) { // Is there data available
         if (help.getFlag() & PICO_SOCK_EV_CLOSE) {
             log_debug("[DEBUG:138] echoserver.hpp =======> fin received!");
         }
 
-        while (help.getLen() < BSIZE) {
+        while (help.getLen() < BSIZE) { //Let's read the data
             help.setRead(pico_socket_read(s, recvbuf + help.getLen(), BSIZE - help.getLen()));
             if (help.getRead() > 0) {
                 help.setLen(help.getLen() + help.getRead());
@@ -157,7 +175,7 @@ void cb_tcpserver(uint16_t ev, struct pico_socket *s) {
 
         if (help.getFlag() & PICO_SOCK_EV_WR) {
             help.setFlag(help.getFlag() & ~PICO_SOCK_EV_WR);
-            send_resp(s);
+            send_resp(s); // Send our response to the data.
         }
     }
 
@@ -169,9 +187,9 @@ void cb_tcpserver(uint16_t ev, struct pico_socket *s) {
         uint32_t ka_val            = 0;
         int yes                    = 1;
 
-        sock_a = pico_socket_accept(s, &orig, &port);
+        sock_a = pico_socket_accept(s, &orig, &port); //Accept a connection
 
-        pico_ipv4_to_string(peer, orig.addr);
+        pico_ipv4_to_string(peer, orig.addr); // get connection origin info
         printf("Connection established with %s:%d\n", peer, short_be(port));
         pico_socket_setoption(sock_a, PICO_TCP_NODELAY, &yes);
 
@@ -186,17 +204,17 @@ void cb_tcpserver(uint16_t ev, struct pico_socket *s) {
 
     }
 
-    if (ev & PICO_SOCK_EV_FIN) {
+    if (ev & PICO_SOCK_EV_FIN) { // If socket closed
         log_debug("[DEBUG:184] echoserver.hpp =======> Socket closed. Exiting normally!");
         pico_timer_add(2000, deferred_exit, NULL);
     }
 
-    if (ev & PICO_SOCK_EV_ERR) {
+    if (ev & PICO_SOCK_EV_ERR) { //If socket error
         log_debug("[DEBUG:189] echoserver.hpp =======> Socket error, better quit while I'm agead!");
         exit(1);
     }
 
-    if (ev & PICO_SOCK_EV_CLOSE) {
+    if (ev & PICO_SOCK_EV_CLOSE) { // If scoket closed from peer
         log_debug("[DEBUG:189] echoserver.hpp =======> Socket received close from peer");
         if (help.getFlag() & PICO_SOCK_EV_RD) {
             pico_socket_shutdown(s, PICO_SHUT_WR);
@@ -205,7 +223,7 @@ void cb_tcpserver(uint16_t ev, struct pico_socket *s) {
 
     }
 
-    if (ev & PICO_SOCK_EV_WR) {
+    if (ev & PICO_SOCK_EV_WR) { 
         help.setRead(send_resp(s));
         if (help.getRead() == 0) {
             help.setFlag(help.getFlag() | PICO_SOCK_EV_WR);
