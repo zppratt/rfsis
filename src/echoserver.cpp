@@ -18,7 +18,7 @@ int main(void) {
 
       pico_stack_init();
       conf.setDev(init_picotcp());
-      start_server();
+      //start_server();
 
       if(conf.getMain_Heartbeats()){
         log_debug("[DEBUG:23] echoserver.cpp =======> main_heartbeats = true, backup will listen for ARPs");

@@ -84,8 +84,13 @@ struct pico_device* init_picotcp(){
       printf("[ERROR:79] echoserver.hpp =======> Could not create tap device. FATAL!!!!\n");
       return NULL;
   }
+  
+  if (conf.getBackup()){
+    pico_string_to_ipv4(conf.getBackup_Addr().c_str(), &ipaddr.addr);
+  } else{
+    pico_string_to_ipv4(conf.getIpv4_Addr().c_str(), &ipaddr.addr);
+  }
 
-  pico_string_to_ipv4(conf.getIpv4_Addr().c_str(), &ipaddr.addr);
   pico_string_to_ipv4(conf.getNetmask().c_str(), &netmask.addr);
   pico_ipv4_link_add(dev, ipaddr, netmask);
   log_debug("[DEBUG:90] echoserver.hpp =======> Adding device " + conf.getTap_Device_name() + " PicoTCP's link layer");
