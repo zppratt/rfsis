@@ -14,4 +14,7 @@ These instruction describe how to test the TCP Echo application using just one b
 7. `sudo ./echoserver`
 
 ### Note:
-The tap device and the IP configuration in config.json need to be different. 
+The tap device and the IP configuration in config.json need to be different.
+
+## Usage
+1. On the same box just `telnet 192.168.1.101 8080`
