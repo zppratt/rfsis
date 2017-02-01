@@ -37,10 +37,10 @@ echo "Giving IP address manually to bridge interface"
 sudo ifconfig $ethname 0.0.0.0 promisc
 echo "setting eth at promisc mode"
 
-sudo ifconfig $tapname 192.168.1.101 promisc
+sudo ifconfig $tapname 192.168.1.100 promisc
 echo "setting tap interface at promisc mode"
 
-sudo ip route add default via 192.168.1.101
+sudo ip route add default via 192.168.1.1
 echo "setting the gateway for bridge"
 
 iptables -A INPUT -i tap0 -j ACCEPT
