@@ -223,7 +223,7 @@ void cb_tcpserver(uint16_t ev, struct pico_socket *s) { //The call back function
 
     }
 
-    if (ev & PICO_SOCK_EV_WR) { 
+    if (ev & PICO_SOCK_EV_WR) {
         help.setRead(send_resp(s));
         if (help.getRead() == 0) {
             help.setFlag(help.getFlag() | PICO_SOCK_EV_WR);
@@ -234,7 +234,7 @@ void cb_tcpserver(uint16_t ev, struct pico_socket *s) { //The call back function
     }
 }
 
-int send_resp(struct pico_socket *s) {
+int send_resp(struct pico_socket *s) { //send the response
     int w, ww = 0;
 
     if (help.getLen() >  help.getPos()) {
@@ -254,7 +254,7 @@ int send_resp(struct pico_socket *s) {
     return ww;
 }
 
-void deferred_exit(pico_time __attribute__((unused)) now, void *arg) {
+void deferred_exit(pico_time __attribute__((unused)) now, void *arg) { //safe exit
     if (arg) {
         free(arg);
         arg = NULL;

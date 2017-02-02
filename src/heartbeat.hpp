@@ -1,33 +1,20 @@
 #ifndef _HEARTBEAT_HPP_
 #define _HEARTBEAT_HPP_
+/*
+* Description: This file contains the logic behind an arp request, to see if the other server is alive
+* Author: Brice Aldrich, Devin Aspy, Zach Pratt
+*/
 
-#include <stdio.h>
-#include <unistd.h>
-#include <string>
-#include <iostream>
-#include <thread>
-#include <time.h>
-
-extern "C" {
-#include "pico_arp.h"
-#include "pico_device.h"
-#include "pico_ipv4.h"
-#include "pico_stack.h"
-#include "pico_socket.h"
-#include "pico_dev_tap.h"
-#include "pico_icmp4.h"
-}
+#include "std_includes.hpp"
 
 using namespace std;
 
-
-
-
+// Class heartbeat: initalizes the arps to the other servers
 class heartbeat{
 public:
   heartbeat(string main_ip, struct pico_device *dev, int heartbeat_sec);
   void arp_check();
-  std::thread arp_checkThread() {
+  std::thread arp_checkThread() { //Thread this popsicle stand (to maximize profits of course).
           return std::thread([=] { arp_check(); });
   }
 
@@ -37,28 +24,30 @@ private:
   int heartbeat_sec;
 };
 
+
+// Constructor: intializes our private fields
 heartbeat::heartbeat(string main_ip, struct pico_device *dev, int heartbeat_sec){
-  this->main_ip = main_ip;
-  this->dev = dev;
-  this->heartbeat_sec = heartbeat_sec;
+  this->main_ip = main_ip; // setting the ip we are going to arp
+  this->dev = dev; // setting the device we will use
+  this->heartbeat_sec = heartbeat_sec; // the interval in which we will send our arps.
 }
 
 
 void heartbeat::arp_check(){
 
-  int count = 1;
+  int count = 1; //counter
 
   double time_counter = 0;
-  clock_t this_time = clock();
+  clock_t this_time = clock(); //lets get a clock for looping
   clock_t last_time = this_time;
 
   while(true){
 
-    this_time = clock();
+    this_time = clock(); //get the time
     time_counter += (double)(this_time - last_time);
     last_time = this_time;
 
-    if(time_counter > (double)(heartbeat_sec * CLOCKS_PER_SEC)) {
+    if(time_counter > (double)(heartbeat_sec * CLOCKS_PER_SEC)) { //send arp at the interval set
           time_counter -= (double)(heartbeat_sec * CLOCKS_PER_SEC);
 
           struct pico_ip4 ip;

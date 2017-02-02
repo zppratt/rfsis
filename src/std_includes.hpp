@@ -8,8 +8,11 @@
 #include <errno.h>
 #include <iostream>
 #include <string>
+#include <unistd.h>
+#include <thread>
 
 extern "C" {
+#include "pico_arp.h"
 #include "pico_device.h"
 #include "pico_ipv4.h"
 #include "pico_stack.h"
