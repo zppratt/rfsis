@@ -63,10 +63,13 @@ wlan0     Link encap:Ethernet  HWaddr b8:27:eb:6b:6a:8b
           RX bytes:14242747 (13.5 MiB)  TX bytes:267728 (261.4 KiB)
 ```
 
-1. If this is not what your getting reboot the pi by `sudo reboot`.
+1. If this is not what your getting, reboot the pi by `sudo reboot`.
 2. `cd rfsis`
 3. `sudo ./bridge.sh`
 4. Run `ifconfig` again to verify the network is up
 
 ## Usage
-1. On the same box just `telnet 192.168.1.101 8080`
+1. Because I don't have the application port forwarded on my router yet you can not test on your local machine with our development VMs.
+2. You can install the project to your own VM instance and then test using your local box, because the VM should see the LAN.
+3. Or just ssh into one of the VM's on my LAN, and test the echo server from there.
+4. To test `telnet your_configured_ip port`, `telnet 192.168.1.101 8080`
