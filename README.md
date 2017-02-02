@@ -1,6 +1,19 @@
 # Redundant Failover Seemless IP Stack (RFSIS)
-This document loosely describes how to install and operate our demo TCP Echo application for RFSIS.
+* Objective: This document loosely describes how to install and operate our demo TCP Echo application for RFSIS.
+* Authors: Brice Aldrich, Devin Aspy, Zach Pratt
 
+##Description:
+RFSIS is a proof of concept Redundant Failover Seamless IP-Stack. Those are fancy words so for simplification it basically just describes an application used to provide failover services in the event that if a main application server fails, a backup server will effortlessly takeover. Do to time constraints we were unable to create our own IP-stack from scratch, so we used an open source one called PicoTCP and modified it. PicoTCP can be found here: http://www.picotcp.com/.
+
+Our team is building this proof of concept for a Senior CAPSTONE course in the Computer Science program at Purdue University, Fort Wayne. The project is inspired and sponsored by INdigital, a company that specializes in 911 telecommunications.
+
+RFSIS is different from accepted failover solutions today. The idea behind RFSIS is to provide the best possible speeds during the failover process so that the end user will be unaware that any failover ever happened. In order to do this, RFSIS does not failover in the application layer, like most solutions today, but instead fails over in user land. As the application utilizes sockets, the sockets states will be automatically copied by the backup within the IP-Stack.
+
+#### Targeted Audience:
+* RFSIS could be used for time sensitive applications such as 911 call routing.
+* Internet based security cameras
+* Internet based house Alarms
+* Anywhere where failover may be needed, use your imagination!
 
 ## Instructions
 These instruction describe how to compile and use the TCP Echo Application using RFSIS.
