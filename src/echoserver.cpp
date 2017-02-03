@@ -3,12 +3,13 @@
 #include "pico-mod.hpp"
 
 /*
-* Description: This file contains the starting point for the program. The logic below destinguished between the backup
-* server and the main, and what tasks they are to preform based of the configuration file config.json.
+* Description: This is our testing application. We start our IP-Stack and pass our logic to it. Eureka!
 *
-* Goal: Proof of Concept Seamless Failover between to application servers.
+* Goal: TCP Echo using PicoTCP IP-Stack.
 *
-* Authors: Brice Aldrich, Devin Aspy, Zach Pratt. s
+* TODO: Framework documentation
+*
+* Authors: Brice Aldrich, Devin Aspy, Zach Pratt.
 */
 
 using namespace std;
