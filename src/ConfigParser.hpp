@@ -27,6 +27,7 @@ public:
   bool getMain_Heartbeats();
   void setDev(struct pico_device *device);
   struct pico_device *getDev();
+  string getProgram();
 
 private:
   bool backup;
@@ -39,10 +40,11 @@ private:
   string tap_device_name;
   bool main_heartbeats;
   struct pico_device *dev;
+  string program;
 
   json read_config() { //code to read in configuration file, private because only needed internally.
       json res;
-      ifstream myfile ("src/config.json");
+      ifstream myfile ("config.json");
 
       if (myfile.is_open())
       {
@@ -73,6 +75,7 @@ ConfigParser::ConfigParser(){
   debug_mode = config["debug_mode"];
   tap_device_name = config["tap_device_name"];
   main_heartbeats = config["main_heartbeats"];
+  program = config["program"];
 }
 
 bool ConfigParser::getBackup(){ //Getter for backup
@@ -116,6 +119,10 @@ void ConfigParser::setDev(struct pico_device *device){ //setter for dev
 }
 struct pico_device *ConfigParser::getDev(){ //getter for dev
   return dev;
+}
+
+string ConfigParser::getProgram(){
+  return program;
 }
 
 #endif

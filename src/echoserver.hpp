@@ -14,7 +14,6 @@
 #define BSIZE 2048 //buffer size for TCP Echo
 
 //Function Declarations
-struct pico_device* init_picotcp();
 void start_server();
 void cb_tcpserver(uint16_t ev, struct pico_socket *s);
 int send_resp(struct pico_socket *s);
@@ -87,36 +86,6 @@ int echoHelper::getFlag(){ // flag getter
 echoHelper help; // Let's creater an echoHelper object named help
 char recvbuf[BSIZE]; // Declare our buffer of the size above for use in the TCP Echo app
 
-
-
-struct pico_device* init_picotcp(){ //Initializing picoTCP by creating a device and registering it to the stack
-  struct pico_device *dev; // Our Pico Device var
-  struct pico_ip4 ipaddr, netmask; // Pico uses weird conversions, so these are specific types pico uses for ip-address and netmask
-
-  char * device_name = const_cast<char*>(conf.getTap_Device_name().c_str()); // Let's get our device name from our config parser.
-  dev = pico_tap_create(device_name); // Create tap device with the tap name above. Typically tap0.
-  log_debug("[DEBUG:79] echoserver.hpp =======> Creating network interface on " + conf.getTap_Device_name());
-
-
-  if(!dev) { // Check for error
-      printf("[ERROR:79] echoserver.hpp =======> Could not create tap device. FATAL!!!!\n");
-      return NULL;
-  }
-
-  if (conf.getBackup()){ //If we are intializing the stack on the backup server
-    pico_string_to_ipv4(conf.getBackup_Addr().c_str(), &ipaddr.addr); // get the backup server address from config parser and convert and copy to pico address
-  } else{ //Else we are intializing the stack on the main server
-    pico_string_to_ipv4(conf.getIpv4_Addr().c_str(), &ipaddr.addr); // get the main server address from config parser and convert and copy to pico address
-  }
-
-  pico_string_to_ipv4(conf.getNetmask().c_str(), &netmask.addr); // Convert the netmask from our config parser to pico netmask
-  pico_ipv4_link_add(dev, ipaddr, netmask); // Link'em all together, registering them to the IP-Stack
-  log_debug("[DEBUG:90] echoserver.hpp =======> Adding device " + conf.getTap_Device_name() + " PicoTCP's link layer");
-  log_debug("[DEBUG:90] echoserver.hpp =======> Adding IP Adress " + conf.getIpv4_Addr() + " PicoTCP's link layer");
-  log_debug("[DEBUG:90] echoserver.hpp =======> Adding Netmask " + conf.getNetmask() + " PicoTCP's link layer");
-
-  return dev; //return our device
-}
 
 void start_server(){ // The bulk of the code for the TCP Echo app
   struct pico_socket *listen_socket; // Creating a pico listening socket

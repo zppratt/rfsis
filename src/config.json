@@ -7,5 +7,6 @@
     "heartbeat_timer": 3,
     "debug_mode" : true,
     "tap_device_name" : "tap0",
-    "main_heartbeats" : false
+    "main_heartbeats" : false,
+    "program" : "../test-src/echoserver"
 }
