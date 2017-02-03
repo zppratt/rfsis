@@ -124,7 +124,7 @@ JSON Field Walkthrough:
 9. `"main_heartbeats": boolean` - This describes whether or not the main server will heartbeat the backup, or the backup will heartbeat the main.
 
 #### Developing Applications
-For now to develop applications with RFSIS requires knowledge of PicoTCP style sockets. You can find information on http://www.pictotcp.com. In the future I would like to create and add a generic framework where the user defines the style of socket they want in a config, and with the use of callback functions, picoTCP will auto-generate based off the user's options. This will allow the user to develop applications with just basic socket knowledge and no knowledge picoTCP.
+For now to develop applications with RFSIS requires knowledge of PicoTCP style sockets. You can find information on http://www.pictotcp.com. In the future I would like to create and add a generic framework where the user defines the style of socket they want in a config.  This will then use callback functions so that picoTCP can auto-generate based off the user's options. This will allow the user to develop applications with just basic socket knowledge, and no knowledge of picoTCP.
 
 Rules:
 * Temporarily the picoTCP Stack can only run an application without a return value or parameters. This is an easy fix, but not of high importance right now, because we are still pushing a proof of concept.
