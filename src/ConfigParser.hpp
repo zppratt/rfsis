@@ -6,9 +6,11 @@
 #include <string>
 
 /* Description: This class is used to store the configuration read in from config.json
-                for easy access later in the program. */
+* for easy access later in the program.
+* Author: Brice Aldrich, Devin Aspy, Zach Pratt
+*/
 
-using json = nlohmann::json;
+using json = nlohmann::json; //using json namesapce for convieniance
 using namespace std;
 
 class ConfigParser{
@@ -38,9 +40,9 @@ private:
   bool main_heartbeats;
   struct pico_device *dev;
 
-  json read_config() {
+  json read_config() { //code to read in configuration file, private because only needed internally.
       json res;
-      ifstream myfile ("src/config.json");
+      ifstream myfile ("conf/config.json");
 
       if (myfile.is_open())
       {
@@ -58,8 +60,9 @@ private:
 
 };
 
+//Constructor: Let's read in our configuration and assign the values to the correct private fields.
 ConfigParser::ConfigParser(){
-  json config = read_config();
+  json config = read_config(); //read in config
 
   backup = config["backup"];
   backup_addr = config["backup_addr"];
@@ -72,46 +75,46 @@ ConfigParser::ConfigParser(){
   main_heartbeats = config["main_heartbeats"];
 }
 
-bool ConfigParser::getBackup(){
+bool ConfigParser::getBackup(){ //Getter for backup
   return backup;
 }
 
-string ConfigParser::getBackup_Addr(){
+string ConfigParser::getBackup_Addr(){ //Getter for backup_addr
   return backup_addr;
 }
 
-string ConfigParser::getIpv4_Addr(){
+string ConfigParser::getIpv4_Addr(){ //getter for ipv4_addr
   return ipv4_addr;
 }
 
-int ConfigParser::getPort(){
+int ConfigParser::getPort(){ //getter for port
   return port;
 }
 
-string ConfigParser::getNetmask(){
+string ConfigParser::getNetmask(){ //getter for netmask
   return netmask;
 }
 
-int ConfigParser::getHeartbeat_Timer(){
+int ConfigParser::getHeartbeat_Timer(){ //getter for heartbeat timer
   return heartbeat_timer;
 }
 
-bool ConfigParser::getDebug_Mode(){
+bool ConfigParser::getDebug_Mode(){ //getter for debug_mode
   return debug_mode;
 }
 
-string ConfigParser::getTap_Device_name(){
+string ConfigParser::getTap_Device_name(){ //getter for tap_device_name
   return tap_device_name;
 }
 
-bool ConfigParser::getMain_Heartbeats(){
+bool ConfigParser::getMain_Heartbeats(){//getter for main_heartbeats
   return main_heartbeats;
 }
 
-void ConfigParser::setDev(struct pico_device *device){
+void ConfigParser::setDev(struct pico_device *device){ //setter for dev
   dev = device;
 }
-struct pico_device *ConfigParser::getDev(){
+struct pico_device *ConfigParser::getDev(){ //getter for dev
   return dev;
 }
 

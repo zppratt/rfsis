@@ -1,6 +1,6 @@
 {
     "backup": false,
-    "backup_addr": "192.168.1.12",
+    "backup_addr": "192.168.1.10",
     "ipv4_addr": "192.168.1.101",
     "port": 8080,
     "netmask": "255.255.255.0",

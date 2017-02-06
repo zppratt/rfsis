@@ -5,6 +5,7 @@
 #include <map>
 #include <iostream>
 #include <functional>
+#include "std_includes.hpp"
 
 using std::cout;
 using std::endl;
