@@ -1,6 +1,4 @@
-#ifndef _CLONEMAC_HPP_
-#define _CLONEMAC_HPP_
-
+#include <cstdlib>
 #include <stdio.h>
 #include <sys/ioctl.h>
 #include <stdlib.h>
@@ -12,30 +10,28 @@
 #include <string.h>
 #include <errno.h>
 
-using namespace std;
-
 class clonemac{
 public:
   clonemac();
   int clone_mac();
-	
+
 private:
-  string new_mac;
+  //String new_mac;
 };
 
-clonemac::clonemac(){
-  /*read in config file to get new_mac/**/
+clonemac::clonemac() {
+  //read in config file to get new_mac
 }
 
-int clonemac::clone_mac(){
-	
+int clonemac::clone_mac() {
+
 	struct ifreq ifr;
 	int s;
 
 	s = socket(AF_INET, SOCK_DGRAM, 0);
 	assert(s != -1);
 
-	/*For testing purposes new mac addr currently hardcoded/**/
+	/*For testing purposes new mac addr currently hardcoded*/
 	strcpy(ifr.ifr_name, "eth0");
 	ifr.ifr_hwaddr.sa_data[0] = 0xDE;
 	ifr.ifr_hwaddr.sa_data[1] = 0xAD;
@@ -48,4 +44,4 @@ int clonemac::clone_mac(){
 
 	return EXIT_SUCCESS;
 
-}	
+}
