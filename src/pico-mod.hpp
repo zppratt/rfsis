@@ -57,6 +57,15 @@ int runPicoStack(void (*program)()) {
         heartbeat *hBeat = new heartbeat(conf.getBackup_Addr(), conf.getDev(), conf.getHeartbeat_Timer()); //Start Arping the backup
         std::thread thd1 = hBeat->arp_checkThread();//arp in a thread
         thd1.detach();
+
+		/*
+		 *	if (ARP_TIMEOUT) {
+		 *		clonemac clone;
+		 *		clone.clone_mac();
+                 *
+		 *	}
+		 */
+
       } else{ //If the backup is going to ARP for the main
         log_debug("[DEBUG:41] echoserver.cpp =======> main_heartbeats = false, main will listen for ARPs");
       }

@@ -23,7 +23,9 @@ extern "C" {
 
 #include "heartbeat.hpp"
 #include "ConfigParser.hpp"
+#include "clonemac.hpp"
 // #include "arpsniffer.hpp"
+
 
 /**
  * Whether debug mode is enabled.
