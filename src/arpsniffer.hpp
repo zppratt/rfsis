@@ -48,6 +48,9 @@ void arpSniffer::run(Sniffer& sniffer) {
 
 bool arpSniffer::callback(const PDU& pdu) {
 
+  const ARP& arp = pdu.rfind_pdu<ARP>();
+
+  cout << "[TEST] " << "The senders IP is at: " << arp.sender_ip_addr() << " iAnd the hw address is at: " << arp.sender_hw_addr() << endl;
 }
 
 
