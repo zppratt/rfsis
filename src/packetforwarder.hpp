@@ -35,8 +35,8 @@ bool packetForwarder::handle(PDU &some_pdu) { //handle gets the pdu of packet.
       const RawPDU::payload_type& payload = raw.payload(); // put it in our payload_type helper.
       std::string message( payload.begin(), payload.end() ); // convert the data segment tostring.
 
-      IP pkt = IP(conf.getBackup_Addr() / TCP(22) / RawPDU(message + "KEYABCD1234"); // Let's build our packet with a key to send to the backup. The IP we want to send to, type TCP, and our datasegment + our key.
-      sender.send(pkt); //Let's forward the packet containing our key to the backup 
+      IP pkt = IP(conf.getBackup_Addr() / TCP(conf.getPort()) / RawPDU(message + "KEYABCD1234"); // Let's build our packet with a key to send to the backup. The IP we want to send to, type TCP with port, and our datasegment + our key.
+      sender.send(pkt); //Let's forward the packet containing our key to the backup
 
 
     }
