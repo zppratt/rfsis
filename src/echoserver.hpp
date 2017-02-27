@@ -33,15 +33,18 @@ public:
   void setPos(int pos);
   void setLen(int len);
   void setFlag(int flag);
+  void setActive(bool active);
   int getRead();
   int getPos();
   int getLen();
   int getFlag();
+  bool getActive();
 private:
   int read;
   int pos;
   int len;
   int flag;
+  bool active;
 };
 
 echoHelper::echoHelper(){ //Constructor for echoHelper class
@@ -49,6 +52,7 @@ echoHelper::echoHelper(){ //Constructor for echoHelper class
   pos = 0;
   len = 0;
   flag = 0;
+  active = false;
 }
 
 void echoHelper::setRead(int read){ // read setter
@@ -87,7 +91,7 @@ echoHelper help; // Let's creater an echoHelper object named help
 char recvbuf[BSIZE]; // Declare our buffer of the size above for use in the TCP Echo app
 
 
-void start_server(){ // The bulk of the code for the TCP Echo app
+void start_server(bool active){ // The bulk of the code for the TCP Echo app
   struct pico_socket *listen_socket; // Creating a pico listening socket
   uint16_t port; // our port
   int ret; // For error checking
@@ -144,7 +148,8 @@ void cb_tcpserver(uint16_t ev, struct pico_socket *s) { //The call back function
 
         if (help.getFlag() & PICO_SOCK_EV_WR) {
             help.setFlag(help.getFlag() & ~PICO_SOCK_EV_WR);
-            send_resp(s); // Send our response to the data.
+            if (active)
+              send_resp(s); // Send our response to the data.
         }
     }
 
@@ -193,7 +198,8 @@ void cb_tcpserver(uint16_t ev, struct pico_socket *s) { //The call back function
     }
 
     if (ev & PICO_SOCK_EV_WR) {
-        help.setRead(send_resp(s));
+        if (active)
+          help.setRead(send_resp(s));
         if (help.getRead() == 0) {
             help.setFlag(help.getFlag() | PICO_SOCK_EV_WR);
         } else {
@@ -231,6 +237,10 @@ void deferred_exit(pico_time __attribute__((unused)) now, void *arg) { //safe ex
 
     log_debug("[DEBUG:189] echoserver.hpp =======> Quitting peacefully.");
     exit(0);
+}
+
+void setActive(bool active){
+  this->active = active;
 }
 
 #endif

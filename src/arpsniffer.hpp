@@ -13,6 +13,8 @@ using std::endl;
 using std::map;
 using std::bind;
 
+using namespace Tins;
+
 class arpSniffer{
 public:
   void start(string dev);
@@ -39,7 +41,7 @@ void arpSniffer::start(string dev){
 void arpSniffer::run(Sniffer& sniffer) {
     sniffer.sniff_loop(
         bind(
-            &arp_monitor::callback,
+            &arpSniffer::callback,
             this,
             std::placeholders::_1
         )
@@ -49,8 +51,12 @@ void arpSniffer::run(Sniffer& sniffer) {
 bool arpSniffer::callback(const PDU& pdu) {
 
   const ARP& arp = pdu.rfind_pdu<ARP>();
+  if (arp.sender_ip_addr() == conf.getIpv4_Addr()){
+    cout << "[TEST] " << "The senders IP is at: " << arp.sender_ip_addr() << " And the hw address is at: " << arp.sender_hw_addr() << endl;
+    conf.setHwaddress(arp.sender_hw_addr());
+  }
 
-  cout << "[TEST] " << "The senders IP is at: " << arp.sender_ip_addr() << " iAnd the hw address is at: " << arp.sender_hw_addr() << endl;
+
 }
 
 

@@ -24,6 +24,7 @@ extern "C" {
 #include "heartbeat.hpp"
 #include "ConfigParser.hpp"
 #include "clonemac.hpp"
+
 // #include "arpsniffer.hpp"
 
 
@@ -33,6 +34,8 @@ extern "C" {
 
 bool DEBUG_MODE_ON;
 ConfigParser conf;
+
+#include "arpsniffer.hpp"
 
 void log_debug(string message) {
   if (DEBUG_MODE_ON) {
