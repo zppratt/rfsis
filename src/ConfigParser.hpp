@@ -24,7 +24,6 @@ public:
   int getHeartbeat_Timer();
   bool getDebug_Mode();
   string getTap_Device_name();
-  bool getMain_Heartbeats();
   void setHwaddress(string hwaddress);
   string getHwaddress();
   void setDev(struct pico_device *device);
@@ -39,7 +38,6 @@ private:
   int heartbeat_timer;
   bool debug_mode;
   string tap_device_name;
-  bool main_heartbeats;
   string hwaddress;
   struct pico_device *dev;
 
@@ -75,7 +73,6 @@ ConfigParser::ConfigParser(){
   heartbeat_timer = config["heartbeat_timer"];
   debug_mode = config["debug_mode"];
   tap_device_name = config["tap_device_name"];
-  main_heartbeats = config["main_heartbeats"];
   hwaddress = "";
 }
 
@@ -109,10 +106,6 @@ bool ConfigParser::getDebug_Mode(){ //getter for debug_mode
 
 string ConfigParser::getTap_Device_name(){ //getter for tap_device_name
   return tap_device_name;
-}
-
-bool ConfigParser::getMain_Heartbeats(){//getter for main_heartbeats
-  return main_heartbeats;
 }
 
 void ConfigParser::setHwaddress(string hwaddress){

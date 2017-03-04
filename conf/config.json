@@ -1,11 +1,10 @@
 {
-    "backup": false,
-    "backup_addr": "192.168.1.10",
-    "ipv4_addr": "192.168.1.101",
+    "backup": true,
+    "backup_addr": "192.168.21.",
+    "ipv4_addr": "192.168.1.20",
     "port": 8080,
     "netmask": "255.255.255.0",
     "heartbeat_timer": 3,
     "debug_mode" : true,
-    "tap_device_name" : "tap0",
-    "main_heartbeats" : true
+    "tap_device_name" : "tap0"
 }

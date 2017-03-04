@@ -35,13 +35,9 @@ int runPicoStack(void (*program)()) {
       conf.setDev(init_picotcp()); //Create and return our TAP device, set it in our echoHelper for later use.
       //start_server();
 
-      if(conf.getMain_Heartbeats()){  //If the main is going to ARP for the backup.
-        log_debug("[DEBUG:23] echoserver.cpp =======> main_heartbeats = true, backup will listen for ARPs");
-      } else{ //If the backup is going to ARP for the main
-        log_debug("[DEBUG:23] echoserver.cpp =======> main_heartbeats = false, backup will initialize ARPs");
-        heartbeat *hBeat = new heartbeat(conf.getIpv4_Addr(), conf.getDev(), conf.getHeartbeat_Timer()); //Start arping the main
-        std::thread thd1 = hBeat->arp_checkThread(); //arp in a thread
-      }
+      //Listen for Arps
+      log_debug("[DEBUG:23] echoserver.cpp =======> main_heartbeats = true, backup will listen for ARPs");
+
 
       pico_stack_loop(); //Start our stack loop, read PicoTCP Docs to understand this.
 
@@ -52,23 +48,10 @@ int runPicoStack(void (*program)()) {
       conf.setDev(init_picotcp()); //Create and return our TAP device, set it in our echoHelper for later use.
       program();
 
-      if(conf.getMain_Heartbeats()){ //If the main is going to ARP for the backup.
-        log_debug("[DEBUG:41] echoserver.cpp =======> main_heartbeats = true, main will initalize ARPs");
-        heartbeat *hBeat = new heartbeat(conf.getBackup_Addr(), conf.getDev(), conf.getHeartbeat_Timer()); //Start Arping the backup
-        std::thread thd1 = hBeat->arp_checkThread();//arp in a thread
-        thd1.detach();
-
-		/*
-		 *	if (ARP_TIMEOUT) {
-		 *		clonemac clone;
-		 *		clone.clone_mac();
-                 *
-		 *	}
-		 */
-
-      } else{ //If the backup is going to ARP for the main
-        log_debug("[DEBUG:41] echoserver.cpp =======> main_heartbeats = false, main will listen for ARPs");
-      }
+      log_debug("[DEBUG:41] echoserver.cpp =======> main_heartbeats = true, main will initalize ARPs");
+      heartbeat *hBeat = new heartbeat(conf.getBackup_Addr(), conf.getDev(), conf.getHeartbeat_Timer()); //Start Arping the backup
+      std::thread thd1 = hBeat->arp_checkThread();//arp in a thread
+      thd1.detach();
 
         pico_stack_loop();  //Start our stack loop, read PicoTCP Docs to understand this.
     }

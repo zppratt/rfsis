@@ -31,7 +31,7 @@ echo "up ethernet interface"
 sudo ifconfig $tapname up
 echo "up tap interface"
 
-sudo ifconfig $bridgename 192.168.1.102/24
+sudo ifconfig $bridgename 192.168.1.75/24
 echo "Giving IP address manually to bridge interface"
 
 sudo ifconfig $ethname 0.0.0.0 promisc
