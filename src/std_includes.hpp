@@ -35,7 +35,7 @@ extern "C" {
 bool DEBUG_MODE_ON;
 ConfigParser conf;
 
-#include "arpsniffer.hpp"
+// #include "arpsniffer.hpp"
 
 void log_debug(string message) {
   if (DEBUG_MODE_ON) {

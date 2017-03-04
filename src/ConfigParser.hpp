@@ -26,6 +26,8 @@ public:
   string getTap_Device_name();
   void setHwaddress(string hwaddress);
   string getHwaddress();
+  bool getActive();
+  void setActive(bool active);
   void setDev(struct pico_device *device);
   struct pico_device *getDev();
 
@@ -39,6 +41,7 @@ private:
   bool debug_mode;
   string tap_device_name;
   string hwaddress;
+  bool active;
   struct pico_device *dev;
 
   json read_config() { //code to read in configuration file, private because only needed internally.
@@ -74,6 +77,12 @@ ConfigParser::ConfigParser(){
   debug_mode = config["debug_mode"];
   tap_device_name = config["tap_device_name"];
   hwaddress = "";
+  if (backup){
+    active = false;
+  } else {
+    active = true;
+  }
+
 }
 
 bool ConfigParser::getBackup(){ //Getter for backup
@@ -121,6 +130,14 @@ void ConfigParser::setDev(struct pico_device *device){ //setter for dev
 }
 struct pico_device *ConfigParser::getDev(){ //getter for dev
   return dev;
+}
+
+bool ConfigParser::getActive(){
+  return active;
+}
+
+void ConfigParser::setActive(bool active){
+  this->active = active;
 }
 
 #endif
