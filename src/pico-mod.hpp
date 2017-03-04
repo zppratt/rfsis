@@ -38,9 +38,8 @@ int runPicoStack(void (*program)()) {
       arpSniffer *arpCatch = new arpSniffer();
       std::thread thread = arpCatch->arpSnifferThread();
       thread.detach();
+      
       log_debug("[DEBUG:23] echoserver.cpp =======> main_heartbeats = true, backup will listen for ARPs");
-
-
       pico_stack_loop(); //Start our stack loop, read PicoTCP Docs to understand this.
 
     } else {
