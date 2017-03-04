@@ -12,7 +12,7 @@ EXE      = echoserver
 all : build $(EXE)
 
 $(EXE): $(OBJS)
-	$(CC) $(LFLAGS) $(OBJS) $(INCLUDE) -lpthread -o $@
+	$(CC) $(LFLAGS) $(OBJS) $(INCLUDE) -ltins -lpthread -o $@
 
 $(BIN)/%.o: $(SRC)/%.cpp
 	$(CC) $(CFLAGS) -I include/ -c $< -o $@

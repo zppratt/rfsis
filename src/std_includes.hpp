@@ -25,7 +25,10 @@ extern "C" {
 #include "ConfigParser.hpp"
 #include "clonemac.hpp"
 
-// #include "arpsniffer.hpp"
+
+ConfigParser conf;
+
+#include "arpsniffer.hpp"
 
 
 /**
@@ -33,7 +36,7 @@ extern "C" {
  */
 
 bool DEBUG_MODE_ON;
-ConfigParser conf;
+
 
 // #include "arpsniffer.hpp"
 

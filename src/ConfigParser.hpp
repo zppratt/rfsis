@@ -4,6 +4,7 @@
 #include "json.hpp"
 #include <iostream>
 #include <string>
+#include <tins/tins.h>
 
 /* Description: This class is used to store the configuration read in from config.json
 * for easy access later in the program.
@@ -11,6 +12,7 @@
 */
 
 using json = nlohmann::json; //using json namesapce for convieniance
+using namespace Tins;
 using namespace std;
 
 class ConfigParser{
@@ -24,8 +26,8 @@ public:
   int getHeartbeat_Timer();
   bool getDebug_Mode();
   string getTap_Device_name();
-  void setHwaddress(string hwaddress);
-  string getHwaddress();
+  void setHwaddress(Tins::ARP::hwaddress_type hwaddress);
+  Tins::ARP::hwaddress_type getHwaddress();
   bool getActive();
   void setActive(bool active);
   void setDev(struct pico_device *device);
@@ -40,7 +42,7 @@ private:
   int heartbeat_timer;
   bool debug_mode;
   string tap_device_name;
-  string hwaddress;
+  Tins::ARP::hwaddress_type hwaddress;
   bool active;
   struct pico_device *dev;
 
@@ -76,7 +78,6 @@ ConfigParser::ConfigParser(){
   heartbeat_timer = config["heartbeat_timer"];
   debug_mode = config["debug_mode"];
   tap_device_name = config["tap_device_name"];
-  hwaddress = "";
   if (backup){
     active = false;
   } else {
@@ -117,11 +118,11 @@ string ConfigParser::getTap_Device_name(){ //getter for tap_device_name
   return tap_device_name;
 }
 
-void ConfigParser::setHwaddress(string hwaddress){
+void ConfigParser::setHwaddress(Tins::ARP::hwaddress_type hwaddress){
   this-> hwaddress = hwaddress;
 }
 
-string ConfigParser::getHwaddress(){
+Tins::ARP::hwaddress_type ConfigParser::getHwaddress(){
   return hwaddress;
 }
 
