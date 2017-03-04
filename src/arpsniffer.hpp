@@ -17,19 +17,22 @@ using namespace Tins;
 
 class arpSniffer{
 public:
-  void start(string dev);
+  void start();
+  std::thread arpSnifferThread() { //Thread this popsicle stand (to maximize profits of course).
+          return std::thread([=] { start(); });
+  }
 private:
   bool callback(PDU &some_pdu);
 };
 
-void arpSniffer::start(string dev){
+void arpSniffer::start(){
     SnifferConfiguration config;
     config.set_promisc_mode(true);
     config.set_filter("arp");
 
     try {
         // Sniff on the provided interface in promiscuous mode
-        Sniffer sniffer(dev.c_str(), config);
+        Sniffer sniffer(conf.getTap_Device_name().c_str(), config);
         sniffer.sniff_loop(make_sniffer_handler(this, &arpSniffer::callback));
     }
     catch (std::exception& ex) {

@@ -35,7 +35,9 @@ int runPicoStack(void (*program)()) {
       conf.setDev(init_picotcp()); //Create and return our TAP device, set it in our echoHelper for later use.
       //start_server();
 
-      //Listen for Arps
+      arpSniffer *arpCatch = new arpSniffer();
+      std::thread thread = arpCatch->arpSnifferThread();
+      thread.detach();
       log_debug("[DEBUG:23] echoserver.cpp =======> main_heartbeats = true, backup will listen for ARPs");
 
 
