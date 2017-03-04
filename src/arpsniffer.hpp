@@ -48,7 +48,7 @@ bool arpSniffer::callback(PDU &some_pdu) {
     conf.setHwaddress(arp.sender_hw_addr());
   }
 
-  cout << "[TEST] " << "The senders IP is at: " << arp.sender_ip_addr() << " And the hw address is at: " << arp.sender_hw_addr() << endl;
+  // cout << "[TEST] " << "The senders IP is at: " << arp.sender_ip_addr() << " And the hw address is at: " << arp.sender_hw_addr() << endl;
 
   return true;
 }
