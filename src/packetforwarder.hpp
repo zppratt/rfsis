@@ -30,15 +30,10 @@ void packetForwarder::start() { //lets fire up this packet sniffer
 bool packetForwarder::handle(PDU &some_pdu) { //handle gets the pdu of packet.
     const IP &ip = some_pdu.rfind_pdu<IP>(); // let's get pdu for IP
     if (ip.protocol() == 6){ //is this IP protocl Transport Layer TCP?
-      TCP tcp = ip.rfind_pdu<TCP>(); //if it is, get the inner pdu of IP and put it in our TCP object
-      const RawPDU& raw = tcp.rfind_pdu<RawPDU>(); // Now let's get the raw data segment, layer 3.
-      const RawPDU::payload_type& payload = raw.payload(); // put it in our payload_type helper.
-      std::string message( payload.begin(), payload.end() ); // convert the data segment tostring.
-
-      IP pkt = IP(conf.getBackup_Addr() / TCP(conf.getPort()) / RawPDU(message + "KEYABCD1234"); // Let's build our packet with a key to send to the backup. The IP we want to send to, type TCP with port, and our datasegment + our key.
-      sender.send(pkt); //Let's forward the packet containing our key to the backup
-
-
+      if (ip.dst_addr() == conf.getIpv4_Addr()){
+        ip.dst_addr(conf.getBackup_Addr());
+        sender.send(ip); //Let's forward the packet containing to the backup
+      }
     }
     return true;
 }
