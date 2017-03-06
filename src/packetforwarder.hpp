@@ -2,6 +2,10 @@
 #define _PACKET_FORWARDER_H
 
 #include "std_includes.hpp"
+#include <tins/tins.h>
+#include <map>
+#include <iostream>
+#include <functional>
 
 
 class packetForwarder{
