@@ -1,7 +1,6 @@
 #ifndef _ARPSNIFFER_HPP_
 #define _ARPSNIFFER_HPP_
 
-
 #include "std_includes.hpp"
 #include <tins/tins.h>
 #include <map>
@@ -47,64 +46,57 @@ void arpSniffer::start(){
 }
 
 bool arpSniffer::callback(PDU &some_pdu) {
-  const ARP& arp = some_pdu.rfind_pdu<ARP>();
+    const ARP& arp = some_pdu.rfind_pdu<ARP>();
 
-   if (this->macFlag == 1 && this->macCloned == false) {
-	clonemac clone;
-	
-	clone.clone_mac(conf.getHwaddress().to_string());
-	this->macCloned = true;
-	
-	
-		
-   }
+    if (this->macFlag == 1 && this->macCloned == false) {
+        clonemac clone;
 
-  if (arp.sender_ip_addr() == conf.getIpv4_Addr()){
- 	   
-    //Increment threadCount since ARP was recieved
-    this->threadCount++;
-    
-    //Create thread timer to check if arp is recieved in specified time manner
-    std::thread arpTimer(threadTimer, &macFlag, &threadCount, threadCount);
-    arpTimer.detach();
+        clone.clone_mac(conf.getHwaddress().to_string
+        this->macCloned = true;
+    }
 
-    cout << "[TEST] " << "The senders IP is at: " << arp.sender_ip_addr() << " And the hw address is at: " << arp.sender_hw_addr() << endl;
-    conf.setHwaddress(arp.sender_hw_addr());
-   
+    if (arp.sender_ip_addr() == conf.getIpv4_Addr()){
+        //Increment threadCount since ARP was recieved
+        this->threadCount++;
+
+        //Create thread timer to check if arp is recieved in specified time manner
+        std::thread arpTimer(threadTimer, &macFlag, &threadCount, threadCount);
+        arpTimer.detach();
+
+        cout << "[TEST] " << "The senders IP is at: " << arp.sender_ip_addr() << " And the hw address is at: " << arp.sender_hw_addr() << endl;
+        conf.setHwaddress(arp.sender_hw_addr());
     }
 
   // cout << "[TEST] " << "The senders IP is at: " << arp.sender_ip_addr() << " And the hw address is at: " << arp.sender_hw_addr() << endl;
 
-  return true;
+    return true;
 }
 
 void arpSniffer::threadTimer(int* clonemacFlag, int* currentThreadCount, int timerThreadId) {
-	bool sleep = true;
-	
-	//printf("\n%s\n", "Thread Created... Sleeping thread");
-	
-	auto start = std::chrono::system_clock::now();	
-	while(sleep) {
-		auto now = std::chrono::system_clock::now();
-		auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(now - start);
+    bool sleep = true;
 
-		//1,000,000 microseconds is equal to one second
-		if (elapsed.count() > 3500000)
-			sleep = false;
-		}
-	
-	//printf("\nCurrent Thread Count = %d\nTimer Process ID = %d\n", *currentThreadCount, timerThreadId);
+    //printf("\n%s\n", "Thread Created... Sleeping thread");
 
-	//If equal than no arp from main server in specified. 
-	if (*currentThreadCount == timerThreadId) {
-		//Flips flag so that parent thread knows to clone mac and take over as master 
-		*clonemacFlag = 1; 
-		printf("%s\n", "Main Server Time Out");	
-	}
-	
-	return;	
+    auto start = std::chrono::system_clock::now();
+    while(sleep) {
+        auto now = std::chrono::system_clock::now();
+        auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(now - start);
+
+        //1,000,000 microseconds is equal to one second
+        if (elapsed.count() > 3500000)
+        sleep = false;
+       }
+
+       //printf("\nCurrent Thread Count = %d\nTimer Process ID = %d\n", *currentThreadCount, timerThreadId);
+
+    //If equal than no arp from main server in specified.
+    if (*currentThreadCount == timerThreadId) {
+    //Flips flag so that parent thread knows to clone mac and take over as master
+    *clonemacFlag = 1;
+    printf("%s\n", "Main Server Time Out");
+    }
+
+    return;
 }
-
-
 
 #endif

@@ -31,23 +31,18 @@ int clonemac::clone_mac(string hwAddr) {
 	s = socket(AF_INET, SOCK_DGRAM, 0);
 	assert(s != -1);
 
-	
-
-
 	/*For testing purposes new mac addr currently hardcoded*/
 	strcpy(ifr.ifr_name, "tap0");
-	
-	
+
 	int count = 0;
 	printf("%s\n", "Cloning mac");
-	
+
 	for(auto element : hwAddress) {
 		//printf("%02x\n", element);
 		ifr.ifr_hwaddr.sa_data[count] = element;
 		count++;
 	}
-	
-	
+
 	/*ifr.ifr_hwaddr.sa_data[0] = 0xDE;
 	ifr.ifr_hwaddr.sa_data[1] = 0xAD;
 	ifr.ifr_hwaddr.sa_data[2] = 0xBE;
@@ -58,13 +53,8 @@ int clonemac::clone_mac(string hwAddr) {
 
 	ifr.ifr_hwaddr.sa_family = ARPHRD_ETHER;
 	assert(ioctl(s, SIOCSIFHWADDR, &ifr) != -1);
-		
-	printf("%s\n", "Mac address successfully cloned!");
-	
 
+	printf("%s\n", "Mac address successfully cloned!");
 
 	return EXIT_SUCCESS;
-
 }
-
-

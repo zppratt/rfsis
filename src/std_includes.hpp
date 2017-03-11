@@ -25,26 +25,22 @@ extern "C" {
 #include "ConfigParser.hpp"
 #include "clonemac.hpp"
 
-
 ConfigParser conf;
 
 #include "arpsniffer.hpp"
  // #include "packetforwarder.hpp"
 
-
 /**
  * Whether debug mode is enabled.
  */
-
-bool DEBUG_MODE_ON;
-
+ bool DEBUG_MODE_ON;
 
 // #include "arpsniffer.hpp"
 
 void log_debug(string message) {
-  if (DEBUG_MODE_ON) {
-    cout << message << endl;
-  }
+    if (DEBUG_MODE_ON) {
+        cout << message << endl;
+    }
 }
 
 #endif

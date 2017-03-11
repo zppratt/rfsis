@@ -1,14 +1,14 @@
 #ifndef _6193_ECHO_SERVER_H_
 #define _6193_ECHO_SERVER_H_
 
-/*
-* Description: This file contains the bulk of the code for the tcp echo application. The file also contains the prep code
-* to run the application in the picoTCP IP-Stack.
-*
-* TODO: Clean this file up to be more OOP.
-*
-* Authors: Brice Aldrich, Devin Aspy, Zach Pratt
-*/
+/**
+ * Description: This file contains the bulk of the code for the tcp echo application. The file also contains the prep code
+ * to run the application in the picoTCP IP-Stack.
+ *
+ * TODO: Clean this file up to be more OOP.
+ *
+ * Authors: Brice Aldrich, Devin Aspy, Zach Pratt
+ */
 
 #include "std_includes.hpp" //Standard includes that we use a lot, some gloabl vars, and one gloabl debug function
 #define BSIZE 2048 //buffer size for TCP Echo
@@ -20,12 +20,11 @@ int send_resp(struct pico_socket *s);
 void deferred_exit(pico_time __attribute__((unused)) now, void *arg);
 
 
-/*
-* Class: echoHelper
-* Description: This class is used to set and get multiple variables
-* used in our TCP echo application throughout multiple functions.
-*/
-
+/**
+ * Class: echoHelper
+ * Description: This class is used to set and get multiple variables
+ * used in our TCP echo application throughout multiple functions.
+ */
 class echoHelper{
 public:
   echoHelper();
@@ -83,11 +82,13 @@ int echoHelper::getFlag(){ // flag getter
   return flag;
 }
 
-echoHelper help; // Let's creater an echoHelper object named help
+echoHelper help; // Let's create an echoHelper object named help
 char recvbuf[BSIZE]; // Declare our buffer of the size above for use in the TCP Echo app
 
-
-void start_server(){ // The bulk of the code for the TCP Echo app
+/**
+ * The bulk of the code for the TCP Echo app
+ */
+void start_server(){
   struct pico_socket *listen_socket; // Creating a pico listening socket
   uint16_t port; // our port
   int ret; // For error checking
@@ -112,8 +113,6 @@ void start_server(){ // The bulk of the code for the TCP Echo app
   }
   log_debug("[DEBUG:116] echoserver.hpp =======> Socket successfully bound to port " + std::to_string(conf.getPort()) + " ret = " + std::to_string(ret));
 
-
-
   ret = pico_socket_listen(listen_socket, 40); // Lets start listening.
   if (ret < 0) { // We couldn't listen, like many of our beloved polititions. ):
       printf("[ERROR:125] echoserver.hpp =======> Could not listen to socket. FATAL!!!\n");
@@ -122,7 +121,13 @@ void start_server(){ // The bulk of the code for the TCP Echo app
   log_debug("[DEBUG:125] echoserver.hpp =======> Successfully listening on socket. ret = " + std::to_string(ret));
 }
 
-void cb_tcpserver(uint16_t ev, struct pico_socket *s) { //The call back function for our TCP echo app
+/**
+ * The call back function for our TCP echo app.
+ * @param ev: The protocol as found in "pico_addressing.h".
+ * (Examples: PICO_PROTO_IPV4, PICO_PROTO_IPV6, PICO_PROTO_UDP)
+ * @param pico_socket: The socket the use to connect.
+ */
+void cb_tcpserver(uint16_t ev, struct pico_socket *s) {
 
     log_debug("[DEBUG:133] echoserver.hpp =======> I heard something, I better send it back!");
 
@@ -171,7 +176,6 @@ void cb_tcpserver(uint16_t ev, struct pico_socket *s) { //The call back function
 
         ka_val = 5000;
         pico_socket_setoption(sock_a, PICO_SOCKET_OPT_KEEPINTVL, &ka_val);
-
     }
 
     if (ev & PICO_SOCK_EV_FIN) { // If socket closed
@@ -190,7 +194,6 @@ void cb_tcpserver(uint16_t ev, struct pico_socket *s) { //The call back function
             pico_socket_shutdown(s, PICO_SHUT_WR);
             log_debug("[DEBUG:189] echoserver.hpp =======> Called shutdown.");
         }
-
     }
 
     if (ev & PICO_SOCK_EV_WR) {
@@ -201,7 +204,6 @@ void cb_tcpserver(uint16_t ev, struct pico_socket *s) { //The call back function
         } else {
             help.setFlag(help.getFlag() & (~PICO_SOCK_EV_WR));
         }
-
     }
 }
 

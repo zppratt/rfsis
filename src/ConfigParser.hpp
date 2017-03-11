@@ -6,12 +6,13 @@
 #include <string>
 #include <tins/tins.h>
 
-/* Description: This class is used to store the configuration read in from config.json
-* for easy access later in the program.
-* Author: Brice Aldrich, Devin Aspy, Zach Pratt
-*/
+/**
+ * Description: This class is used to store the configuration read in from config.json
+ * for easy access later in the program.
+ * Author: Brice Aldrich, Devin Aspy, Zach Pratt
+ */
 
-using json = nlohmann::json; //using json namesapce for convieniance
+using json = nlohmann::json; //using json namesapce for convenience
 using namespace Tins;
 using namespace std;
 
@@ -66,7 +67,7 @@ private:
 
 };
 
-//Constructor: Let's read in our configuration and assign the values to the correct private fields.
+// Constructor: Let's read in our configuration and assign the values to the correct private fields.
 ConfigParser::ConfigParser(){
   json config = read_config(); //read in config
 
@@ -83,7 +84,6 @@ ConfigParser::ConfigParser(){
   } else {
     active = true;
   }
-
 }
 
 bool ConfigParser::getBackup(){ //Getter for backup

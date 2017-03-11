@@ -54,3 +54,10 @@ lib/picotcp/build
 test.cpp
 test.cpp.bak
 webserver
+
+# Documentation
+html
+latex
+Doxyfile
+tags
+*.bk
