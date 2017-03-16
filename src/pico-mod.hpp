@@ -7,7 +7,7 @@
 #include <sys/wait.h>
 
 /**
- * Description: This file contains the starting point for the IP-Stack. The logic below destinguished between the backup
+ * Description: This file contains the starting point for the IP-Stack. The logic below distinguished between the backup
  * server and the main sevrer's stack, and what tasks they are to preform based of the configuration file config.json.
  * The stack takes a callback funtion to run a user defined program.
  *

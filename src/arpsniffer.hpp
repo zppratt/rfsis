@@ -21,7 +21,7 @@ public:
   std::thread arpSnifferThread() { //Thread this popsicle stand (to maximize profits of course).
           return std::thread([=] { start(); });
   }
-  static void threadTimer(int* clonemacFlag, int* currentThreadCount, int timerThreadId);
+  static void threadTimer(int* clonemacFlag, int* arpCount, int timerThreadId);
 
 private:
   bool callback(PDU &some_pdu);
@@ -51,15 +51,15 @@ bool arpSniffer::callback(PDU &some_pdu) {
     if (this->macFlag == 1 && this->macCloned == false) {
         clonemac clone;
 
-        clone.clone_mac(conf.getHwaddress().to_string
+        clone.clone_mac(conf.getHwaddress().to_string());
         this->macCloned = true;
     }
 
     if (arp.sender_ip_addr() == conf.getIpv4_Addr()){
-        //Increment threadCount since ARP was recieved
+        //Increment threadCount since ARP was received
         this->threadCount++;
 
-        //Create thread timer to check if arp is recieved in specified time manner
+        //Create thread timer to check if ARP is received in specified time manner
         std::thread arpTimer(threadTimer, &macFlag, &threadCount, threadCount);
         arpTimer.detach();
 
@@ -72,28 +72,30 @@ bool arpSniffer::callback(PDU &some_pdu) {
     return true;
 }
 
-void arpSniffer::threadTimer(int* clonemacFlag, int* currentThreadCount, int timerThreadId) {
+void arpSniffer::threadTimer(int* clonemacFlag, int* arpCount,
+        int timerThreadId) {
     bool sleep = true;
 
     //printf("\n%s\n", "Thread Created... Sleeping thread");
 
     auto start = std::chrono::system_clock::now();
-    while(sleep) {
+    while (sleep) {
         auto now = std::chrono::system_clock::now();
-        auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(now - start);
+        auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(
+                now - start);
 
         //1,000,000 microseconds is equal to one second
         if (elapsed.count() > 3500000)
-        sleep = false;
-       }
+            sleep = false;
+    }
 
-       //printf("\nCurrent Thread Count = %d\nTimer Process ID = %d\n", *currentThreadCount, timerThreadId);
+    //printf("\nCurrent Thread Count = %d\nTimer Process ID = %d\n", *currentThreadCount, timerThreadId);
 
     //If equal than no arp from main server in specified.
-    if (*currentThreadCount == timerThreadId) {
-    //Flips flag so that parent thread knows to clone mac and take over as master
-    *clonemacFlag = 1;
-    printf("%s\n", "Main Server Time Out");
+    if (*arpCount == timerThreadId) {
+        //Flips flag so that parent thread knows to clone mac and take over as master
+        *clonemacFlag = 1;
+        printf("%s\n", "Main Server Time Out");
     }
 
     return;
