@@ -8,17 +8,17 @@
 #include <string.h>
 #include <errno.h>
 
-class clonemac{
+class CloneMac{
 public:
-  clonemac();
-  int clone_mac(string hwAddr);
+  CloneMac();
+  int clone(string hwAddr);
 private:
 };
 
-clonemac::clonemac() {
+CloneMac::CloneMac() {
 }
 
-int clonemac::clone_mac(string hwAddr) {
+int CloneMac::clone(string hwAddr) {
 
 	HWAddress<6> hwAddress(hwAddr);
 

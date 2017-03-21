@@ -15,7 +15,7 @@ using std::map;
 using std::bind;
 using namespace Tins;
 
-class arpSniffer{
+class ArpSniffer{
 public:
   void start();
   std::thread arpSnifferThread() { //Thread this popsicle stand (to maximize profits of course).
@@ -30,7 +30,7 @@ private:
   bool macCloned = false;
 };
 
-void arpSniffer::start(){
+void ArpSniffer::start(){
     SnifferConfiguration config;
     config.set_promisc_mode(true);
     config.set_filter("arp");
@@ -38,20 +38,20 @@ void arpSniffer::start(){
     try {
         // Sniff on the provided interface in promiscuous mode
         Sniffer sniffer(conf.getTap_Device_name().c_str(), config);
-        sniffer.sniff_loop(make_sniffer_handler(this, &arpSniffer::callback));
+        sniffer.sniff_loop(make_sniffer_handler(this, &ArpSniffer::callback));
     }
     catch (std::exception& ex) {
         std::cerr << "Error: " << ex.what() << std::endl;
     }
 }
 
-bool arpSniffer::callback(PDU &some_pdu) {
+bool ArpSniffer::callback(PDU &some_pdu) {
     const ARP& arp = some_pdu.rfind_pdu<ARP>();
 
     if (this->macFlag == 1 && this->macCloned == false) {
-        clonemac clone;
+        CloneMac clone;
 
-        clone.clone_mac(conf.getHwaddress().to_string());
+        clone.clone(conf.getHwaddress().to_string());
         this->macCloned = true;
     }
 
@@ -72,7 +72,7 @@ bool arpSniffer::callback(PDU &some_pdu) {
     return true;
 }
 
-void arpSniffer::threadTimer(int* clonemacFlag, int* arpCount,
+void ArpSniffer::threadTimer(int* clonemacFlag, int* arpCount,
         int timerThreadId) {
     bool sleep = true;
 

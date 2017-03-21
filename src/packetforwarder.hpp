@@ -7,9 +7,9 @@
 #include <iostream>
 #include <functional>
 
-class packetForwarder{
+class PacketForwarder{
 public:
-  packetForwarder();
+  PacketForwarder();
   void start();
   void setFilter(std::string filter);
   void setInterface(std::string interface);
@@ -18,7 +18,7 @@ private:
   PacketSender sender;
 };
 
-packetForwarder::packetForwarder(){
+PacketForwarder::PacketForwarder(){
     // Set the default filter.
     filter = "tcp and host" + conf.getIpv4_Addr();
 }
@@ -26,7 +26,7 @@ packetForwarder::packetForwarder(){
 /**
  * Configure and start the packet sniffing.
  */
-void packetForwarder::start() {
+void PacketForwarder::start() {
     SnifferConfiguration config;
     config.set_promisc_mode(true); // set to promiscuous mode
     config.set_filter(filter); // set filter
@@ -37,7 +37,7 @@ void packetForwarder::start() {
 /**
  * Sends the IP PDU to the backup if it has the correct protocol and destination.
  */
-bool packetForwarder::handle(PDU &some_pdu) { //handle gets the pdu of packet.
+bool PacketForwarder::handle(PDU &some_pdu) { //handle gets the pdu of packet.
     const IP &ip = some_pdu.rfind_pdu<IP>(); // let's get pdu for IP
     if (ip.protocol() == 6){ // is this IP protocl Transport Layer TCP?
       if (ip.dst_addr() == conf.getIpv4_Addr()){
@@ -48,10 +48,10 @@ bool packetForwarder::handle(PDU &some_pdu) { //handle gets the pdu of packet.
     return true;
 }
 
-void packetForwarder::setFilter(std::string filter){
+void PacketForwarder::setFilter(std::string filter){
   this->filter = filter;
 }
-void packetForwarder::setInterface(std::string interface){
+void PacketForwarder::setInterface(std::string interface){
   this->interface = interface;
 }
 

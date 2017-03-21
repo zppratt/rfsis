@@ -1,6 +1,6 @@
+#include "echohelper.hpp"
 #include "std_includes.hpp"
-#include "echoserver.hpp"
-#include "pico-mod.hpp"
+#include "rfsis.hpp"
 
 /**
  * Description: This is our testing application. We start our IP-Stack and pass our logic to it. Eureka!
@@ -16,6 +16,6 @@ using namespace std;
 extern int errno;
 
 int main(void) {
-    runPicoStack(start_server);
+    runStack(start_server);
     return 0;
 }

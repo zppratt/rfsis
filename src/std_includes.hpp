@@ -22,7 +22,7 @@ extern "C" {
 }
 
 #include "heartbeat.hpp"
-#include "ConfigParser.hpp"
+#include "configparser.hpp"
 #include "clonemac.hpp"
 
 ConfigParser conf;

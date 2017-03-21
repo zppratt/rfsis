@@ -25,9 +25,9 @@ void deferred_exit(pico_time __attribute__((unused)) now, void *arg);
  * Description: This class is used to set and get multiple variables
  * used in our TCP echo application throughout multiple functions.
  */
-class echoHelper{
+class EchoHelper{
 public:
-  echoHelper();
+  EchoHelper();
   void setRead(int read);
   void setPos(int pos);
   void setLen(int len);
@@ -43,46 +43,46 @@ private:
   int flag;
 };
 
-echoHelper::echoHelper(){ //Constructor for echoHelper class
+EchoHelper::EchoHelper(){ //Constructor for echoHelper class
   read = 0; //set all our private ints to 0
   pos = 0;
   len = 0;
   flag = 0;
 }
 
-void echoHelper::setRead(int read){ // read setter
+void EchoHelper::setRead(int read){ // read setter
   this->read = read;
 }
 
-void echoHelper::setPos(int pos){ // pos setter
+void EchoHelper::setPos(int pos){ // pos setter
   this->pos = pos;
 }
 
-void echoHelper::setLen(int len){ // len setter
+void EchoHelper::setLen(int len){ // len setter
   this->len = len;
 }
 
-void echoHelper::setFlag(int flag){ // flag setter
+void EchoHelper::setFlag(int flag){ // flag setter
   this->flag = flag;
 }
 
-int echoHelper::getRead(){ // read getter
+int EchoHelper::getRead(){ // read getter
   return read;
 }
 
-int echoHelper::getPos(){ // pos getter
+int EchoHelper::getPos(){ // pos getter
   return pos;
 }
 
-int echoHelper::getLen(){ // len getter
+int EchoHelper::getLen(){ // len getter
   return len;
 }
 
-int echoHelper::getFlag(){ // flag getter
+int EchoHelper::getFlag(){ // flag getter
   return flag;
 }
 
-echoHelper help; // Let's create an echoHelper object named help
+EchoHelper help; // Let's create an echoHelper object named help
 char recvbuf[BSIZE]; // Declare our buffer of the size above for use in the TCP Echo app
 
 /**

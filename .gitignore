@@ -61,3 +61,6 @@ latex
 Doxyfile
 tags
 *.bk
+.cproject
+.project
+language.settings.xml

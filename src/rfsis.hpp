@@ -21,7 +21,7 @@ extern int errno;
 
 struct pico_device* init_picotcp();
 
-int runPicoStack(void (*program)()) {
+int runStack(void (*program)()) {
     DEBUG_MODE_ON = conf.getDebug_Mode();
     log_debug("echoserver.cpp =======> Debug mode = on"); //Is debug mode on, if it is say something
 
@@ -32,7 +32,7 @@ int runPicoStack(void (*program)()) {
         conf.setDev(init_picotcp()); //Create and return our TAP device, set it in our echoHelper for later use.
         //start_server();
 
-        arpSniffer *arpCatch = new arpSniffer();
+        ArpSniffer *arpCatch = new ArpSniffer();
         std::thread thread = arpCatch->arpSnifferThread();
         thread.detach();
 
@@ -47,7 +47,7 @@ int runPicoStack(void (*program)()) {
         program();
 
         log_debug("echoserver.cpp =======> main_heartbeats = true, main will initalize ARPs");
-        heartbeat *hBeat = new heartbeat(conf.getBackup_Addr(), conf.getDev(), conf.getHeartbeat_Timer()); //Start Arping the backup
+        Heartbeat *hBeat = new Heartbeat(conf.getBackup_Addr(), conf.getDev(), conf.getHeartbeat_Timer()); //Start Arping the backup
         std::thread thd1 = hBeat->arp_checkThread();//arp in a thread
         thd1.detach();
 

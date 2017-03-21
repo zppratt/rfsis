@@ -11,9 +11,9 @@
 using namespace std;
 
 // Class heartbeat: initalizes the arps to the other servers
-class heartbeat{
+class Heartbeat{
 public:
-  heartbeat(string main_ip, struct pico_device *dev, int heartbeat_sec);
+  Heartbeat(string main_ip, struct pico_device *dev, int heartbeat_sec);
   void arp_check();
   std::thread arp_checkThread() { //Thread this popsicle stand (to maximize profits of course
     return std::thread([=] { arp_check(); });
@@ -28,7 +28,7 @@ private:
 /**
  * Constructor: intializes our private fields
  */
-heartbeat::heartbeat(string main_ip, struct pico_device *dev, int heartbeat_sec){
+Heartbeat::Heartbeat(string main_ip, struct pico_device *dev, int heartbeat_sec){
   this->main_ip = main_ip; // setting the ip we are going to arp
   this->dev = dev; // setting the device we will use
   this->heartbeat_sec = heartbeat_sec; // the interval in which we will send our arps.
@@ -37,7 +37,7 @@ heartbeat::heartbeat(string main_ip, struct pico_device *dev, int heartbeat_sec)
 /**
  * Sends ARPs to the backup server.
  */
-void heartbeat::arp_check(){
+void Heartbeat::arp_check(){
   int count = 1; //counter
 
   double time_counter = 0;
