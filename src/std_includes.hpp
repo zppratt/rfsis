@@ -11,6 +11,8 @@
 #include <unistd.h>
 #include <thread>
 
+
+
 extern "C" {
 #include "pico_arp.h"
 #include "pico_device.h"
@@ -19,13 +21,30 @@ extern "C" {
 #include "pico_socket.h"
 #include "pico_dev_tap.h"
 #include "pico_icmp4.h"
+#include <sys/ioctl.h>
+#include <stdlib.h>
+#include <assert.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <net/if_arp.h>
+#include <net/if.h>
+#include <string.h>
+#include <errno.h>
+}
+
+#include "ConfigParser.hpp"
+ConfigParser conf;
+ bool DEBUG_MODE_ON;
+void log_debug(std::string message) {
+    if (DEBUG_MODE_ON) {
+        cout << message << endl;
+    }
 }
 
 #include "heartbeat.hpp"
-#include "ConfigParser.hpp"
-#include "clonemac.hpp"
 
-ConfigParser conf;
+#include "networkmimic.hpp"
+
 
 #include "arpsniffer.hpp"
  // #include "packetforwarder.hpp"
@@ -33,14 +52,10 @@ ConfigParser conf;
 /**
  * Whether debug mode is enabled.
  */
- bool DEBUG_MODE_ON;
+
 
 // #include "arpsniffer.hpp"
 
-void log_debug(string message) {
-    if (DEBUG_MODE_ON) {
-        cout << message << endl;
-    }
-}
+
 
 #endif
