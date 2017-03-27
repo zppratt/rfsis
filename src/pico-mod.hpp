@@ -20,6 +20,7 @@ using namespace std;
 extern int errno;
 
 struct pico_device* init_picotcp();
+struct pico_device* spoof_IP();
 
 int runPicoStack(void (*program)()) {
     DEBUG_MODE_ON = conf.getDebug_Mode();
@@ -78,8 +79,36 @@ struct pico_device* init_picotcp(){
         pico_string_to_ipv4(conf.getIpv4_Addr().c_str(), &ipaddr.addr); // get the main server address from config parser and convert and copy to pico address
     }
 
+
     pico_string_to_ipv4(conf.getNetmask().c_str(), &netmask.addr); // Convert the netmask from our config parser to pico netmask
     pico_ipv4_link_add(dev, ipaddr, netmask); // Link'em all together, registering them to the IP-Stack
+
+    pico_ipv4_link_del(dev, ipaddr);
+    pico_string_to_ipv4("192.168.1.24", &ipaddr.addr);
+    pico_ipv4_link_add(dev, ipaddr, netmask);
+
+
+    log_debug("echoserver.hpp =======> Adding device " + conf.getTap_Device_name() + " PicoTCP's link layer");
+    log_debug("echoserver.hpp =======> Adding IP Adress " + conf.getIpv4_Addr() + " PicoTCP's link layer");
+    log_debug("echoserver.hpp =======> Adding Netmask " + conf.getNetmask() + " PicoTCP's link layer");
+
+    return dev; //return our device
+}
+
+struct pico_device* spoof_IP(){
+    struct pico_device *dev = conf.getDev(); // Our Pico Device var
+    struct pico_ip4 ipaddr, netmask; // Pico uses weird conversions, so these are specific types pico uses for ip-address and netmask
+
+    if(!dev) { // Check for error
+        printf("echoserver.hpp =======> Could not spoof ip on tap device. FATAL!!!!\n");
+        return NULL;
+    }
+
+    pico_string_to_ipv4(conf.getIpv4_Addr().c_str(), &ipaddr.addr); // get the main server address from config parser and convert and copy to pico address
+    pico_string_to_ipv4(conf.getNetmask().c_str(), &netmask.addr); // Convert the netmask from our config parser to pico netmask
+    pico_ipv4_link_del(dev, ipaddr); // Link'em all together, registering them to the IP-Stack
+    pico_ipv4_link_add(dev, ipaddr, netmask);
+
     log_debug("echoserver.hpp =======> Adding device " + conf.getTap_Device_name() + " PicoTCP's link layer");
     log_debug("echoserver.hpp =======> Adding IP Adress " + conf.getIpv4_Addr() + " PicoTCP's link layer");
     log_debug("echoserver.hpp =======> Adding Netmask " + conf.getNetmask() + " PicoTCP's link layer");
