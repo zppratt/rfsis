@@ -31,7 +31,7 @@ int runPicoStack(void (*program)()) {
 
         pico_stack_init(); //Initialize the IP-Stack
         conf.setDev(init_picotcp()); //Create and return our TAP device, set it in our echoHelper for later use.
-        //start_server();
+        program();
 
         arpSniffer *arpCatch = new arpSniffer();
         std::thread thread = arpCatch->arpSnifferThread();

@@ -54,7 +54,7 @@ struct pico_device* NetworkMimic::spoof_IP(){
   rtn_code = pico_ipv4_link_add(dev, ipaddr, netmask);
 
   if (rtn_code == -1){
-    log_debug("clonemac.hpp =======> Spoof failure. Device going down.");
+    printf("clonemac.hpp =======> Spoof failure. Device going down.");
     exit(-1);
   }
 
