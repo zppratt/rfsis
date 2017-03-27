@@ -83,11 +83,6 @@ struct pico_device* init_picotcp(){
     pico_string_to_ipv4(conf.getNetmask().c_str(), &netmask.addr); // Convert the netmask from our config parser to pico netmask
     pico_ipv4_link_add(dev, ipaddr, netmask); // Link'em all together, registering them to the IP-Stack
 
-    pico_ipv4_link_del(dev, ipaddr);
-    pico_string_to_ipv4("192.168.1.24", &ipaddr.addr);
-    pico_ipv4_link_add(dev, ipaddr, netmask);
-
-
     log_debug("echoserver.hpp =======> Adding device " + conf.getTap_Device_name() + " PicoTCP's link layer");
     log_debug("echoserver.hpp =======> Adding IP Adress " + conf.getIpv4_Addr() + " PicoTCP's link layer");
     log_debug("echoserver.hpp =======> Adding Netmask " + conf.getNetmask() + " PicoTCP's link layer");
@@ -109,9 +104,9 @@ struct pico_device* spoof_IP(){
     pico_ipv4_link_del(dev, ipaddr); // Link'em all together, registering them to the IP-Stack
     pico_ipv4_link_add(dev, ipaddr, netmask);
 
-    log_debug("echoserver.hpp =======> Adding device " + conf.getTap_Device_name() + " PicoTCP's link layer");
-    log_debug("echoserver.hpp =======> Adding IP Adress " + conf.getIpv4_Addr() + " PicoTCP's link layer");
-    log_debug("echoserver.hpp =======> Adding Netmask " + conf.getNetmask() + " PicoTCP's link layer");
+    log_debug("echoserver.hpp =======> Spoofed Device: " + conf.getTap_Device_name());
+    log_debug("echoserver.hpp =======> With IP Address " + conf.getIpv4_Addr());
+    log_debug("echoserver.hpp =======> And Netmask " + conf.getNetmask());
 
     return dev; //return our device
 }
