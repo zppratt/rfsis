@@ -23,7 +23,9 @@ int NetworkMimic::clone_mac(string hwAddr) {
 	printf("%s\n", "Cloning mac");
 
 	for(auto element : hwAddress) {
-    printf("FOUND DATA FOR HW ADDRESS: %d\n", element);
+    if (count == 5){
+      element = element -1;
+    }
 		ifr.ifr_hwaddr.sa_data[count] = element;
 		count++;
 	}
