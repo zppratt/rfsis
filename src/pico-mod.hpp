@@ -38,7 +38,19 @@ int runPicoStack(void (*program)()) {
         thread.detach();
 
         log_debug("echoserver.cpp =======> main_heartbeats = true, backup will listen for ARPs");
-        pico_stack_loop(); //Start our stack loop, read PicoTCP Docs to understand this.
+
+        NetworkMimic mimic;
+
+        while (1){
+          pico_stack_tick();
+          sleep(1);
+          if (!conf.getBackup()){
+            mimic.clone_mac(conf.getHwaddress().to_string());
+            conf.setDev(mimic.spoof_IP());
+          }
+
+          printf("Hey I'm working! *********************************\n");
+        }
 
 
     } else {
@@ -49,22 +61,14 @@ int runPicoStack(void (*program)()) {
         program();
 
         log_debug("echoserver.cpp =======> main_heartbeats = true, main will initalize ARPs");
-        heartbeat *hBeat = new heartbeat(conf.getBackup_Addr(), conf.getDev(), conf.getHeartbeat_Timer()); //Start Arping the backup
+        Heartbeat *hBeat = new Heartbeat(conf.getBackup_Addr(), conf.getDev(), conf.getHeartbeat_Timer()); //Start Arping the backup
+        std::thread thd1 = hBeat->arp_checkThread();//arp in a thread
+        thd1.detach();
 
 
-      //  pico_stack_loop();  //Start our stack loop, read PicoTCP Docs to understand this.
-        int i = 0;
-        while (1){
-          pico_stack_tick();
-          sleep(1);
-          printf("I ARPED********\n");
-          hBeat->arp_check();
+        pico_stack_loop();  //Start our stack loop, read PicoTCP Docs to understand this.
 
 
-
-          printf("Hey I'm working! *********************************\n");
-          i++;
-        }
     }
     return 0;
 }

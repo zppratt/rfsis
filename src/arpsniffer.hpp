@@ -49,11 +49,13 @@ bool arpSniffer::callback(PDU &some_pdu) {
     const ARP& arp = some_pdu.rfind_pdu<ARP>();
 
     if (this->macFlag == 1 && this->macCloned == false) {
-        NetworkMimic mimic;
-
-        mimic.clone_mac(conf.getHwaddress().to_string());
-        this->macCloned = true;
-        conf.setDev(mimic.spoof_IP());
+        conf.setBackup(false);
+        // NetworkMimic mimic;
+        //
+        // mimic.clone_mac(conf.getHwaddress().to_string());
+        // this->macCloned = true;
+        //
+        // conf.setDev(mimic.spoof_IP());
     }
 
     if (arp.sender_ip_addr() == conf.getIpv4_Addr()){

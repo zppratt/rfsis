@@ -20,6 +20,7 @@ class ConfigParser{
 public:
   ConfigParser();
   bool getBackup();
+  void setBackup(bool backup);
   string getBackup_Addr();
   string getIpv4_Addr();
   int getPort();
@@ -88,6 +89,10 @@ ConfigParser::ConfigParser(){
 
 bool ConfigParser::getBackup(){ //Getter for backup
   return backup;
+}
+
+void ConfigParser::setBackup(bool backup){
+  this->backup = backup;
 }
 
 string ConfigParser::getBackup_Addr(){ //Getter for backup_addr

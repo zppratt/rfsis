@@ -149,7 +149,7 @@ void cb_tcpserver(uint16_t ev, struct pico_socket *s) {
 
         if (help.getFlag() & PICO_SOCK_EV_WR) {
             help.setFlag(help.getFlag() & ~PICO_SOCK_EV_WR);
-            if (conf.getActive())
+            if (!conf.getBackup())
               send_resp(s); // Send our response to the data.
         }
     }
@@ -197,7 +197,7 @@ void cb_tcpserver(uint16_t ev, struct pico_socket *s) {
     }
 
     if (ev & PICO_SOCK_EV_WR) {
-        if (conf.getActive())
+        if (!conf.getBackup())
           help.setRead(send_resp(s));
         if (help.getRead() == 0) {
             help.setFlag(help.getFlag() | PICO_SOCK_EV_WR);
