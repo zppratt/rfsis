@@ -63,8 +63,10 @@ bool arpSniffer::callback(PDU &some_pdu) {
         //Create thread timer to check if ARP is received in specified time manner
         std::thread arpTimer(threadTimer, &macFlag, &threadCount, threadCount);
         arpTimer.detach();
+        if (arp.target_ip_addr() == conf.getBackup_Addr()){
+          cout << "[HEARTBEAT] " << "The senders IP is at: " << arp.sender_ip_addr() << " And the hw address is at: " << arp.sender_hw_addr() << endl;
+        }
 
-        cout << "[TEST] " << "The senders IP is at: " << arp.sender_ip_addr() << " And the hw address is at: " << arp.sender_hw_addr() << endl;
         conf.setHwaddress(arp.sender_hw_addr());
     }
 

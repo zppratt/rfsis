@@ -1,7 +1,7 @@
 {
     "backup": false,
     "backup_addr": "192.168.1.21",
-    "ipv4_addr": "192.168.1.20",
+    "ipv4_addr": "192.168.1.21",
     "port": 8080,
     "netmask": "255.255.255.0",
     "heartbeat_timer": 3,

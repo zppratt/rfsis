@@ -15,9 +15,6 @@ class heartbeat{
 public:
   heartbeat(string main_ip, struct pico_device *dev, int heartbeat_sec);
   void arp_check();
-  std::thread arp_checkThread() { //Thread this popsicle stand (to maximize profits of course
-    return std::thread([=] { arp_check(); });
-  }
 
 private:
   string main_ip;
@@ -38,26 +35,10 @@ heartbeat::heartbeat(string main_ip, struct pico_device *dev, int heartbeat_sec)
  * Sends ARPs to the backup server.
  */
 void heartbeat::arp_check(){
-  int count = 1; //counter
 
-  double time_counter = 0;
-  clock_t this_time = clock(); //lets get a clock for looping
-  clock_t last_time = this_time;
-
-  while(true){
-    this_time = clock(); //get the time
-    time_counter += (double)(this_time - last_time);
-    last_time = this_time;
-
-    if(time_counter > (double)(heartbeat_sec * CLOCKS_PER_SEC)) { //send arp at the interval
-        time_counter -= (double)(heartbeat_sec * CLOCKS_PER_SEC);
-
-        struct pico_ip4 ip;
-        pico_string_to_ipv4(main_ip.c_str(), &ip.addr);
-        pico_arp_request(dev, &ip, PICO_ARP_QUERY);
-        count++;
-    }
-  }
+    struct pico_ip4 ip;
+    pico_string_to_ipv4(main_ip.c_str(), &ip.addr);
+    pico_arp_request(dev, &ip, PICO_ARP_QUERY);
 }
 
 #endif
