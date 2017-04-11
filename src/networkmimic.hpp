@@ -20,18 +20,20 @@ int NetworkMimic::clone_mac(string hwAddr) {
 	strcpy(ifr.ifr_name, "tap0");
 
 	int count = 0;
-	printf("%s\n", "Cloning mac");
+	printf("%s\n", "Cloning mac-1");
 
 	for(auto element : hwAddress) {
-    if (count == 5){
-      element = element -1;
-    }
+    		if (count == 5){
+      			element = element -1;
+   		 }			
+		
 		ifr.ifr_hwaddr.sa_data[count] = element;
 		count++;
 	}
-
+	
+	
 	ifr.ifr_hwaddr.sa_family = ARPHRD_ETHER;
-
+	printf("%s\n", "Cloning mac-2");
 	// Clone the Mac address
 	assert(ioctl(s, SIOCSIFHWADDR, &ifr) != -1);
 

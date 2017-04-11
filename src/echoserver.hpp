@@ -184,7 +184,7 @@ void cb_tcpserver(uint16_t ev, struct pico_socket *s) {
     }
 
     if (ev & PICO_SOCK_EV_ERR) { //If socket error
-        log_debug("[DEBUG:189] echoserver.hpp =======> Socket error, better quit while I'm agead!");
+        log_debug("[DEBUG:189] echoserver.hpp =======> Socket error, better quit while I'm ahead!");
         exit(1);
     }
 

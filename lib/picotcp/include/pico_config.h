@@ -106,6 +106,8 @@ static inline uint32_t long_from(void *_p)
 # define PICO_ARP_REPLY   0x0200
 # define PICO_ARP_HTYPE_ETH 0x0100
 
+bool PICO_APP_STATE = false;
+
 #   ifndef BYTESWAP_GCC
 static inline uint16_t short_be(uint16_t le)
 {

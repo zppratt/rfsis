@@ -1,5 +1,5 @@
 #include "std_includes.hpp"
-#include "echoserver.hpp"
+#include "udpechoserver.hpp"
 #include "pico-mod.hpp"
 
 /**
@@ -15,7 +15,8 @@
 using namespace std;
 extern int errno;
 
-/*int main(void){
-    runPicoStack(start_server);
+int main(void){
+    runPicoStack(udpecho_start);
     return 0;
-}*/
+}
+

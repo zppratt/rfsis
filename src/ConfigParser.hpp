@@ -34,6 +34,7 @@ public:
   void setActive(bool active);
   void setDev(struct pico_device *device);
   struct pico_device *getDev();
+  int getTimeout();
 
 private:
   bool backup;
@@ -47,6 +48,7 @@ private:
   Tins::ARP::hwaddress_type hwaddress;
   bool active;
   struct pico_device *dev;
+  int timeout;
 
   json read_config() { //code to read in configuration file, private because only needed internally.
       json res;
@@ -80,6 +82,7 @@ ConfigParser::ConfigParser(){
   heartbeat_timer = config["heartbeat_timer"];
   debug_mode = config["debug_mode"];
   tap_device_name = config["tap_device_name"];
+  timeout = config["timeout"];
   if (backup){
     active = false;
   } else {
@@ -88,7 +91,7 @@ ConfigParser::ConfigParser(){
 }
 
 bool ConfigParser::getBackup(){ //Getter for backup
-  return backup;
+	return backup;
 }
 
 void ConfigParser::setBackup(bool backup){
@@ -128,7 +131,7 @@ void ConfigParser::setHwaddress(Tins::ARP::hwaddress_type hwaddress){
 }
 
 Tins::ARP::hwaddress_type ConfigParser::getHwaddress(){
-  return hwaddress;
+	return hwaddress;
 }
 
 void ConfigParser::setDev(struct pico_device *device){ //setter for dev
@@ -144,6 +147,10 @@ bool ConfigParser::getActive(){
 
 void ConfigParser::setActive(bool active){
   this->active = active;
+}
+
+int ConfigParser::getTimeout(){
+  return timeout;
 }
 
 #endif

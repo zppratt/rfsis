@@ -42,11 +42,9 @@ void log_debug(std::string message) {
 }
 
 #include "heartbeat.hpp"
-
 #include "networkmimic.hpp"
-
-
 #include "arpsniffer.hpp"
+#include "socket_sync_client.hpp"
  // #include "packetforwarder.hpp"
 
 /**
@@ -56,6 +54,6 @@ void log_debug(std::string message) {
 
 // #include "arpsniffer.hpp"
 
-
+extern int mainServerTimeoutFlag;
 
 #endif

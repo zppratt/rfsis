@@ -1,3 +1,4 @@
+
 #ifndef _PICO_MOD_H_
 #define _PICO_MOD_H_
 
@@ -31,7 +32,7 @@ int runPicoStack(void (*program)()) {
 
         pico_stack_init(); //Initialize the IP-Stack
         conf.setDev(init_picotcp()); //Create and return our TAP device, set it in our echoHelper for later use.
-        program();
+      //  program();
 
         arpSniffer *arpCatch = new arpSniffer();
         std::thread thread = arpCatch->arpSnifferThread();
@@ -40,16 +41,20 @@ int runPicoStack(void (*program)()) {
         log_debug("echoserver.cpp =======> main_heartbeats = true, backup will listen for ARPs");
 
         NetworkMimic mimic;
+	int cloneFlag = 0;
 
         while (1){
           pico_stack_tick();
           sleep(1);
-          if (!conf.getBackup()){
-            mimic.clone_mac(conf.getHwaddress().to_string());
-            conf.setDev(mimic.spoof_IP());
-          }
-
-          printf("Hey I'm working! *********************************\n");
+           if (!conf.getBackup() && cloneFlag == 0){
+              printf("About to enter clone mac function\n");
+               mimic.clone_mac(conf.getHwaddress().to_string());
+              // spoof_IP();
+              conf.setBackup(false);
+               program();
+           	  cloneFlag = 1;
+	          }
+          //printf("Hey I'm working! *********************************\n");
         }
 
 
@@ -91,6 +96,8 @@ struct pico_device* init_picotcp(){
 
     if (conf.getBackup()){ //If we are intializing the stack on the backup server
         pico_string_to_ipv4(conf.getBackup_Addr().c_str(), &ipaddr.addr); // get the backup server address from config parser and convert and copy to pico address
+    if (conf.getBackup()){ //If we are intializing the stack on the backup server
+        pico_string_to_ipv4(conf.getBackup_Addr().c_str(), &ipaddr.addr); // get the backup server address from config parser and convert and copy to pico address
     } else{ //Else we are intializing the stack on the main server
         pico_string_to_ipv4(conf.getIpv4_Addr().c_str(), &ipaddr.addr); // get the main server address from config parser and convert and copy to pico address
     }
@@ -104,6 +111,7 @@ struct pico_device* init_picotcp(){
     log_debug("echoserver.hpp =======> Adding Netmask " + conf.getNetmask() + " PicoTCP's link layer");
 
     return dev; //return our device
+    }
 }
 
 struct pico_device* spoof_IP(){

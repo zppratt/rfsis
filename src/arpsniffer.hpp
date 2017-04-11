@@ -21,7 +21,7 @@ public:
   std::thread arpSnifferThread() { //Thread this popsicle stand (to maximize profits of course).
           return std::thread([=] { start(); });
   }
-  static void threadTimer(int* clonemacFlag, int* arpCount, int timerThreadId);
+static void threadTimer(int* clonemacFlag, int* arpCount, int timerThreadId);
 
 private:
   bool callback(PDU &some_pdu);
@@ -49,24 +49,24 @@ bool arpSniffer::callback(PDU &some_pdu) {
     const ARP& arp = some_pdu.rfind_pdu<ARP>();
 
     if (this->macFlag == 1 && this->macCloned == false) {
+      cout << "SETTING BACKUP OVER AND OVER *********************" << this << endl;
         conf.setBackup(false);
         // NetworkMimic mimic;
         //
         // mimic.clone_mac(conf.getHwaddress().to_string());
-        // this->macCloned = true;
+         this->macCloned = true;
         //
         // conf.setDev(mimic.spoof_IP());
     }
 
-    if (arp.sender_ip_addr() == conf.getIpv4_Addr()){
-        //Increment threadCount since ARP was received
+    if (arp.sender_ip_addr() == conf.getIpv4_Addr() && this->macFlag != 1){
         this->threadCount++;
 
         //Create thread timer to check if ARP is received in specified time manner
         std::thread arpTimer(threadTimer, &macFlag, &threadCount, threadCount);
         arpTimer.detach();
         if (arp.target_ip_addr() == conf.getBackup_Addr()){
-          cout << "[HEARTBEAT] " << "The senders IP is at: " << arp.sender_ip_addr() << " And the hw address is at: " << arp.sender_hw_addr() << endl;
+          cout << "[HEARTBEAT] " << "The senders IP is at: " << arp.sender_ip_addr() << " And the hw address is at: " << arp.sender_hw_addr()  << endl;
         }
 
         conf.setHwaddress(arp.sender_hw_addr());
@@ -90,7 +90,7 @@ void arpSniffer::threadTimer(int* clonemacFlag, int* arpCount,
                 now - start);
 
         //1,000,000 microseconds is equal to one second
-        if (elapsed.count() > 3500000)
+        if (elapsed.count() > 10000000)
             sleep = false;
     }
 
