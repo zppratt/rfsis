@@ -15,7 +15,7 @@
 using namespace std;
 extern int errno;
 
-/*int main(void){
+int main(void){
     runPicoStack(start_server);
     return 0;
-}*/
+}

@@ -6,6 +6,8 @@
 #include <iostream>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <pico_slaacv4.h>
+#include <pico_icmp4.h>
 
 /**
  * Description: This file contains the starting point for the IP-Stack. The logic below distinguished between the backup
@@ -22,6 +24,64 @@ extern int errno;
 
 struct pico_device* init_picotcp();
 struct pico_device* spoof_IP();
+void app_slaacv4();
+void slaacv4_cb(struct pico_ip4 *ip, uint8_t code);
+void ping_callback_slaacv4(struct pico_icmp4_stats *s);
+
+void ping_callback_slaacv4(struct pico_icmp4_stats *s)
+{
+    char host[30] = { };
+
+    pico_ipv4_to_string(host, s->dst.addr);
+    if (s->err == 0) {
+        dbg("SLAACV4: %lu bytes from %s: icmp_req=%lu ttl=64 time=%lu ms\n", s->size, host,
+            s->seq, (long unsigned int)s->time);
+        if (s->seq >= 3) {
+            dbg("SLAACV4: TEST SUCCESS!\n");
+            pico_slaacv4_unregisterip();
+            exit(0);
+        }
+    } else {
+        dbg("SLAACV4: ping %lu to %s error %d\n", s->seq, host, s->err);
+        dbg("SLAACV4: TEST FAILED!\n");
+        exit(1);
+    }
+}
+
+void slaacv4_cb(struct pico_ip4 *ip, uint8_t code)
+{
+    char dst[16] = "169.254.22.5";
+    printf("SLAACV4 CALLBACK ip:0x%X code:%d \n", ip->addr, code);
+    if (code == 0)
+    {
+#ifdef PICO_SUPPORT_PING
+        pico_icmp4_ping(dst, 3, 1000, 5000, 32, ping_callback_slaacv4);
+#else
+        exit(0);
+#endif
+    }
+    else
+    {
+        exit(255);
+    }
+
+}
+
+
+void app_slaacv4()
+{
+    char *sdev = NULL;
+
+    struct pico_device *dev = conf.getDev(); // Our Pico Device var
+
+    if(dev == NULL) {
+        printf("%s: error getting device %s: %s\n", __FUNCTION__, dev->name, strerror(pico_err));
+        exit(255);
+    }
+
+    pico_slaacv4_claimip(dev, slaacv4_cb);
+}
+
 
 int runPicoStack(void (*program)()) {
     DEBUG_MODE_ON = conf.getDebug_Mode();
@@ -48,8 +108,10 @@ int runPicoStack(void (*program)()) {
           sleep(1);
            if (!conf.getBackup() && cloneFlag == 0){
               printf("About to enter clone mac function\n");
-               //mimic.clone_mac(conf.getHwaddress().to_string());
-              // spoof_IP();
+               mimic.clone_mac(conf.getHwaddress().to_string());
+               app_slaacv4();
+
+		// spoof_IP();
                conf.setBackup(false);
                program();
            	  cloneFlag = 1;
@@ -137,5 +199,7 @@ struct pico_device* spoof_IP(){
 
     return dev; //return our device
 }
+
+
 
 #endif
