@@ -21,5 +21,5 @@ build:
 	@mkdir -p bin
 
 clean:
-	rm $(EXE)
 	rm -rf bin
+	rm $(EXE)

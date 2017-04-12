@@ -24,10 +24,8 @@ private:
  // union pico_address dst;
 };
 
-void cb_udpclient(uint16_t ev, struct pico_socket *s){
-   char *recvbuf = NULL;
-}
-
+void cb_udpclient(uint16_t ev, struct pico_socket *s);
+/*
 socket_sync_client::socket_sync_client(){
   address = {0};
   listen_port = short_be(0);
@@ -59,4 +57,29 @@ void socket_sync_client::start_client(){
   }
 }
 
+void cb_udpclient(uint16_t ev, struct pico_socket *s)
+{
+    char *recvbuf = NULL;
+    int r = 0;
+
+    if (ev & PICO_SOCK_EV_RD) {
+        recvbuf = calloc(1, udpclient_pas->datasize);
+        if (!recvbuf) {
+            printf("%s: no memory available\n", __FUNCTION__);
+            return;
+        }
+
+        do {
+            r = pico_socket_recv(s, recvbuf, udpclient_pas->datasize);
+        } while ( r > 0);
+        free(recvbuf);
+    }
+
+    if (ev == PICO_SOCK_EV_ERR) {
+        printf("Socket Error received. Bailing out.\n");
+        free(udpclient_pas);
+        exit(7);
+    }
+}
+*/
 #endif

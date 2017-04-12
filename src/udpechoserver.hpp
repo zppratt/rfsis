@@ -21,7 +21,7 @@
  */
  void udpecho_start();
  void cb_udpecho(uint16_t ev, struct pico_socket *s);
-
+ void deferred_exit(pico_time __attribute__((unused)) now, void *arg);
 
 class udpechoserver
 {
@@ -62,7 +62,7 @@ void cb_udpecho(uint16_t ev, struct pico_socket *s)
 
         do {
             r = pico_socket_recvfrom(s, recvbuf, udpecho_pas->datasize, (void *)&peer.ip4.addr, &port);
-            /* printf("UDP recvfrom returned %d\n", r); */
+            printf("UDP recvfrom returned %d\n", r);
             if (r > 0) {
                 if (strncmp(recvbuf, "end", 3) == 0) {
                     printf("Client requested to exit... test successful.\n");
@@ -125,7 +125,9 @@ void udpecho_start()
         exit(1);
     }
 
-    printf("udpecho> Bound to [%s]:%d.\n", baddr, short_be(listen_port));
+
+   // printf("udpecho> Bound to [%s]:%d.\n", inaddr_bind.addr, short_be(listen_port));
+ 
 #ifdef PICOAPP_IPFILTER
     {
         struct pico_ip4 address, in_addr_netmask, in_addr;
@@ -168,5 +170,16 @@ out:
     free(udpecho_pas);
     exit(255);
 }
+
+void deferred_exit(pico_time __attribute__((unused)) now, void *arg) { //safe exit
+    if (arg) {
+        free(arg);
+        arg = NULL;
+    }
+
+    log_debug("[DEBUG:189] echoserver.hpp =======> Quitting peacefully.");
+    exit(0);
+}
+
 
 #endif 

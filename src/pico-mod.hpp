@@ -48,9 +48,9 @@ int runPicoStack(void (*program)()) {
           sleep(1);
            if (!conf.getBackup() && cloneFlag == 0){
               printf("About to enter clone mac function\n");
-               mimic.clone_mac(conf.getHwaddress().to_string());
+               //mimic.clone_mac(conf.getHwaddress().to_string());
               // spoof_IP();
-              conf.setBackup(false);
+               conf.setBackup(false);
                program();
            	  cloneFlag = 1;
 	          }
@@ -82,6 +82,9 @@ int runPicoStack(void (*program)()) {
  * Initialize picoTCP by creating a device and registering it to the stack.
  */
 struct pico_device* init_picotcp(){
+
+   
+
     struct pico_device *dev; // Our Pico Device var
     struct pico_ip4 ipaddr, netmask; // Pico uses weird conversions, so these are specific types pico uses for ip-address and netmask
 
