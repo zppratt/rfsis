@@ -20,7 +20,7 @@ private:
  // uint16_t sport;
  // union pico_address dst;
 };
-/*
+
 void udpclient_send(pico_time __attribute__((unused)) now, void __attribute__((unused))  *arg);
 
 void cb_udpsend(uint16_t ev, struct pico_socket *s) {
@@ -77,7 +77,7 @@ socket_sync_serv::serv_start() {
 void udpclient_send(pico_time __attribute__((unused)) now, void __attribute__((unused))  *arg)
 {
     struct pico_socket *s = udpclient_pas->s;
-    char *buf = NULL;
+    char *buf = "Test";
     int i = 0, w = 0;
     static uint16_t loop = 0;
 
@@ -112,5 +112,5 @@ void udpclient_send(pico_time __attribute__((unused)) now, void __attribute__((u
         exit(1);
     }
 }
-*/
+
 #endif

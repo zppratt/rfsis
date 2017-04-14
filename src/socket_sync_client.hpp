@@ -16,6 +16,7 @@ private:
   uint16_t listen_port;
   uint8_t dstPort;
   struct pico_ip4 dAddr;
+  struct udpclient_pas *udpclient_pas;
  //  struct pico_socket *s;
  // uint8_t loops;
  // uint8_t subloops;
@@ -25,8 +26,9 @@ private:
 };
 
 void cb_udpclient(uint16_t ev, struct pico_socket *s);
-/*
+
 socket_sync_client::socket_sync_client(){
+  udpclient_pas = (struct udpclient_pas*)calloc(1, sizeof(struct udpclient_pas));
   address = {0};
   listen_port = short_be(0);
   pico_string_to_ipv4(conf.getBackup_Addr().c_str(), &dAddr.addr);
@@ -61,25 +63,30 @@ void cb_udpclient(uint16_t ev, struct pico_socket *s)
 {
     char *recvbuf = NULL;
     int r = 0;
+    int datasize = 5000;
 
     if (ev & PICO_SOCK_EV_RD) {
-        recvbuf = calloc(1, udpclient_pas->datasize);
-        if (!recvbuf) {
+        //recvbuf = calloc(1, udpclient_pas->datasize);
+   	recvbuf = (char*)calloc(1, datasize);
+    
+    if (!recvbuf) {
             printf("%s: no memory available\n", __FUNCTION__);
             return;
         }
 
         do {
-            r = pico_socket_recv(s, recvbuf, udpclient_pas->datasize);
-        } while ( r > 0);
+          r = pico_socket_recv(s, recvbuf, datasize);  
+	//r = pico_socket_recv(s, recvbuf, udpclient_pas->datasize);
+            printf("UDP recieved: %s\n", recvbuf);
+	} while ( r > 0);
         free(recvbuf);
     }
 
     if (ev == PICO_SOCK_EV_ERR) {
         printf("Socket Error received. Bailing out.\n");
-        free(udpclient_pas);
+        //free(udpclient_pas);
         exit(7);
     }
 }
-*/
+
 #endif

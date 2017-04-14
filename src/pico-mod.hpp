@@ -6,7 +6,6 @@
 #include <iostream>
 #include <unistd.h>
 #include <sys/wait.h>
-#include <pico_slaacv4.h>
 #include <pico_icmp4.h>
 
 /**
@@ -31,7 +30,7 @@ void ping_callback_slaacv4(struct pico_icmp4_stats *s);
 void ping_callback_slaacv4(struct pico_icmp4_stats *s)
 {
     char host[30] = { };
-
+    printf("Cloning IP test-2.\n");
     pico_ipv4_to_string(host, s->dst.addr);
     if (s->err == 0) {
         dbg("SLAACV4: %lu bytes from %s: icmp_req=%lu ttl=64 time=%lu ms\n", s->size, host,
@@ -50,6 +49,7 @@ void ping_callback_slaacv4(struct pico_icmp4_stats *s)
 
 void slaacv4_cb(struct pico_ip4 *ip, uint8_t code)
 {
+    printf("Cloning IP test-1.\n");  
     char dst[16] = "169.254.22.5";
     printf("SLAACV4 CALLBACK ip:0x%X code:%d \n", ip->addr, code);
     if (code == 0)
@@ -71,7 +71,7 @@ void slaacv4_cb(struct pico_ip4 *ip, uint8_t code)
 void app_slaacv4()
 {
     char *sdev = NULL;
-
+    printf("Cloning IP test.\n");
     struct pico_device *dev = conf.getDev(); // Our Pico Device var
 
     if(dev == NULL) {
@@ -108,14 +108,14 @@ int runPicoStack(void (*program)()) {
           sleep(1);
            if (!conf.getBackup() && cloneFlag == 0){
               printf("About to enter clone mac function\n");
-               mimic.clone_mac(conf.getHwaddress().to_string());
+               //mimic.clone_mac(conf.getHwaddress().to_string());
                app_slaacv4();
 
 		// spoof_IP();
                conf.setBackup(false);
                program();
-           	  cloneFlag = 1;
-	          }
+               cloneFlag = 1;
+	   }
           //printf("Hey I'm working! *********************************\n");
         }
 

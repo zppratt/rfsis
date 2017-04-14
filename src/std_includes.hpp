@@ -10,7 +10,7 @@
 #include <string>
 #include <unistd.h>
 #include <thread>
-//#include "../lib/picotcp/test/examples/utils.h"
+
 //#include <pico_ipv4.h>
 //#include <pico_ipv6.h>
 //#include <pico_socket.h>
@@ -34,6 +34,9 @@ extern "C" {
 #include <net/if.h>
 #include <string.h>
 #include <errno.h>
+#include <pico_slaacv4.h>
+#include "../lib/picotcp/test/examples/utils.h"
+
 }
 
 #include "ConfigParser.hpp"
@@ -55,8 +58,6 @@ void log_debug(std::string message) {
  * Whether debug mode is enabled.
  */
 
-
-// #include "arpsniffer.hpp"
 
 extern int mainServerTimeoutFlag;
 

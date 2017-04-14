@@ -1,6 +1,6 @@
 /*********************************************************************
-   PicoTCP. Copyright (c) 2012-2015 Altran Intelligent Systems. Some rights reserved.
-   See LICENSE and COPYING for usage.
+   PicoTCP. Copyright (c) 2012-2017 Altran Intelligent Systems. Some rights reserved.
+   See COPYING, LICENSE.GPLv2 and LICENSE.GPLv3 for usage.
 
    .
 
@@ -10,7 +10,6 @@
 #include "pico_addressing.h"
 #include "pico_protocol.h"
 #include "pico_tree.h"
-#include "pico_device.h"
 
 #define PICO_IPV4_INADDR_ANY 0x00000000U
 
@@ -68,14 +67,6 @@ struct pico_ipv4_link
 #endif
 };
 
-#ifdef PICO_SUPPORT_MCAST
-struct pico_mcast_group {
-    uint8_t filter_mode;
-    uint16_t reference_count;
-    struct pico_ip4 mcast_addr;
-    struct pico_tree MCASTSources;
-};
-#endif
 
 struct pico_ipv4_route
 {
