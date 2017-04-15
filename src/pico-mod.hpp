@@ -84,10 +84,8 @@ int runPicoStack(void (*program)()) {
 /**
  * Initialize picoTCP by creating a device and registering it to the stack.
  */
-struct pico_device* init_picotcp(){
-
-   
-
+struct pico_device* init_picotcp() {
+    
     struct pico_device *dev = NULL; // Our Pico Device var
     struct pico_ip4 ipaddr, netmask; // Pico uses weird conversions, so these are specific types pico uses for ip-address and netmask
 
@@ -100,8 +98,6 @@ struct pico_device* init_picotcp(){
         return NULL;
     }
 
-    if (conf.getBackup()){ //If we are intializing the stack on the backup server
-        pico_string_to_ipv4(conf.getBackup_Addr().c_str(), &ipaddr.addr); // get the backup server address from config parser and convert and copy to pico address
     if (conf.getBackup()){ //If we are intializing the stack on the backup server
         pico_string_to_ipv4(conf.getBackup_Addr().c_str(), &ipaddr.addr); // get the backup server address from config parser and convert and copy to pico address
     } else{ //Else we are intializing the stack on the main server
@@ -117,10 +113,6 @@ struct pico_device* init_picotcp(){
     log_debug("echoserver.hpp =======> Adding Netmask " + conf.getNetmask() + " PicoTCP's link layer");
 
     return dev; //return our device
-    }
-
-    return dev;
-
 }
 
 struct pico_device* spoof_IP(){
