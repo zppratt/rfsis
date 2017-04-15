@@ -50,6 +50,9 @@ void Heartbeat::arp_check(){
     last_time = this_time;
 
     if(time_counter > (double)(heartbeat_sec * CLOCKS_PER_SEC)) { //send arp at the interval
+
+	std::cout << "Sending ARP..." << std::endl;
+
         time_counter -= (double)(heartbeat_sec * CLOCKS_PER_SEC);
 
         struct pico_ip4 ip;

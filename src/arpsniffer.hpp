@@ -49,14 +49,8 @@ bool arpSniffer::callback(PDU &some_pdu) {
     const ARP& arp = some_pdu.rfind_pdu<ARP>();
 
     if (this->macFlag == 1 && this->macCloned == false) {
-      cout << "SETTING BACKUP OVER AND OVER *********************" << this << endl;
         conf.setBackup(false);
-        // NetworkMimic mimic;
-        //
-        // mimic.clone_mac(conf.getHwaddress().to_string());
-         this->macCloned = true;
-        //
-        // conf.setDev(mimic.spoof_IP());
+        this->macCloned = true;
     }
 
     if (arp.sender_ip_addr() == conf.getIpv4_Addr() && this->macFlag != 1){
@@ -72,7 +66,7 @@ bool arpSniffer::callback(PDU &some_pdu) {
         conf.setHwaddress(arp.sender_hw_addr());
     }
 
-  // cout << "[TEST] " << "The senders IP is at: " << arp.sender_ip_addr() << " And the hw address is at: " << arp.sender_hw_addr() << endl;
+    cout << "[TEST] " << "The senders IP is at: " << arp.sender_ip_addr() << " And the hw address is at: " << arp.sender_hw_addr() << endl;
 
     return true;
 }
@@ -90,7 +84,7 @@ void arpSniffer::threadTimer(int* clonemacFlag, int* arpCount,
                 now - start);
 
         //1,000,000 microseconds is equal to one second
-        if (elapsed.count() > 10000000)
+        if (elapsed.count() > 1500000)
             sleep = false;
     }
 

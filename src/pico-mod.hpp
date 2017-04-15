@@ -23,67 +23,11 @@ extern int errno;
 
 struct pico_device* init_picotcp();
 struct pico_device* spoof_IP();
-void app_slaacv4();
-void slaacv4_cb(struct pico_ip4 *ip, uint8_t code);
-void ping_callback_slaacv4(struct pico_icmp4_stats *s);
-
-void ping_callback_slaacv4(struct pico_icmp4_stats *s)
-{
-    char host[30] = { };
-    printf("Cloning IP test-2.\n");
-    pico_ipv4_to_string(host, s->dst.addr);
-    if (s->err == 0) {
-        dbg("SLAACV4: %lu bytes from %s: icmp_req=%lu ttl=64 time=%lu ms\n", s->size, host,
-            s->seq, (long unsigned int)s->time);
-        if (s->seq >= 3) {
-            dbg("SLAACV4: TEST SUCCESS!\n");
-            pico_slaacv4_unregisterip();
-            exit(0);
-        }
-    } else {
-        dbg("SLAACV4: ping %lu to %s error %d\n", s->seq, host, s->err);
-        dbg("SLAACV4: TEST FAILED!\n");
-        exit(1);
-    }
-}
-
-void slaacv4_cb(struct pico_ip4 *ip, uint8_t code)
-{
-    printf("Cloning IP test-1.\n");  
-    char dst[16] = "169.254.22.5";
-    printf("SLAACV4 CALLBACK ip:0x%X code:%d \n", ip->addr, code);
-    if (code == 0)
-    {
-#ifdef PICO_SUPPORT_PING
-        pico_icmp4_ping(dst, 3, 1000, 5000, 32, ping_callback_slaacv4);
-#else
-        exit(0);
-#endif
-    }
-    else
-    {
-        exit(255);
-    }
-
-}
-
-
-void app_slaacv4()
-{
-    char *sdev = NULL;
-    printf("Cloning IP test.\n");
-    struct pico_device *dev = conf.getDev(); // Our Pico Device var
-
-    if(dev == NULL) {
-        printf("%s: error getting device %s: %s\n", __FUNCTION__, dev->name, strerror(pico_err));
-        exit(255);
-    }
-
-    pico_slaacv4_claimip(dev, slaacv4_cb);
-}
-
 
 int runPicoStack(void (*program)()) {
+
+    NetworkMimic mimic;
+
     DEBUG_MODE_ON = conf.getDebug_Mode();
     log_debug("echoserver.cpp =======> Debug mode = on"); //Is debug mode on, if it is say something
 
@@ -100,7 +44,6 @@ int runPicoStack(void (*program)()) {
 
         log_debug("echoserver.cpp =======> main_heartbeats = true, backup will listen for ARPs");
 
-        NetworkMimic mimic;
 	int cloneFlag = 0;
 
         while (1){
@@ -108,15 +51,13 @@ int runPicoStack(void (*program)()) {
           sleep(1);
            if (!conf.getBackup() && cloneFlag == 0){
               printf("About to enter clone mac function\n");
-               //mimic.clone_mac(conf.getHwaddress().to_string());
-               app_slaacv4();
+              mimic.clone_mac(conf.getHwaddress().to_string());
 
 		// spoof_IP();
                conf.setBackup(false);
                program();
                cloneFlag = 1;
 	   }
-          //printf("Hey I'm working! *********************************\n");
         }
 
 
@@ -147,7 +88,7 @@ struct pico_device* init_picotcp(){
 
    
 
-    struct pico_device *dev; // Our Pico Device var
+    struct pico_device *dev = NULL; // Our Pico Device var
     struct pico_ip4 ipaddr, netmask; // Pico uses weird conversions, so these are specific types pico uses for ip-address and netmask
 
     char * device_name = const_cast<char*>(conf.getTap_Device_name().c_str()); // Let's get our device name from our config parser.
@@ -177,6 +118,9 @@ struct pico_device* init_picotcp(){
 
     return dev; //return our device
     }
+
+    return dev;
+
 }
 
 struct pico_device* spoof_IP(){
