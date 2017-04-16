@@ -71,14 +71,14 @@ void socket_sync_serv::serv_start() {
    ret = pico_socket_connect(udpclient_pas->s, &udpclient_pas->dst.ip4, udpclient_pas->sport);
   
    if (ret < 0) {
-      printf("%s: error connecting to [%s]:%u: %s\n", __FUNCTION__, short_be(udpclient_pas->sport), strerror(pico_err));
+      printf("%s: error connecting to [%u]:%u: %s\n", __FUNCTION__, udpclient_pas->dst.ip4.addr, short_be(udpclient_pas->sport), strerror(pico_err));
       free(udpclient_pas);
       exit(1);
    }
 
    printf("Connected successfully");
 
-   printf("\n%s: UDP client launched. Sending packets of %u bytes in %u loops and %u subloops to %s:%u\n\n",
+   printf("\n%s: UDP client launched. Sending packets of %u bytes in %u loops and %u subloops to %u:%u\n\n",
            __FUNCTION__, udpclient_pas->datasize, udpclient_pas->loops, udpclient_pas->subloops, udpclient_pas->dst.ip4.addr, short_be(udpclient_pas->sport));
 
   if (!pico_timer_add(100, udpclient_send, NULL)) {
@@ -91,7 +91,7 @@ void socket_sync_serv::serv_start() {
 void udpclient_send(pico_time __attribute__((unused)) now, void __attribute__((unused))  *arg)
 {
     struct pico_socket *s = udpclient_pas->s;
-    char *buf = "Test";
+    char *buf;
     int i = 0, w = 0;
     static uint16_t loop = 0;
 

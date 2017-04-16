@@ -27,7 +27,7 @@ struct pico_device* spoof_IP();
 
 int runPicoStack(void (*program)()) {
 
-    NetworkMimic mimic;
+    // NetworkMimic mimic;
 
     DEBUG_MODE_ON = conf.getDebug_Mode();
     log_debug("echoserver.cpp =======> Debug mode = on"); //Is debug mode on, if it is say something

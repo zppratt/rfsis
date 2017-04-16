@@ -115,7 +115,7 @@ void udpecho_start()
     if (!udpecho_pas->s) {
         printf("%s: error opening socket: %s\n", __FUNCTION__, strerror(pico_err));
         free(udpecho_pas);
-        exit(1);
+	goto out;
     }
 
     ret = pico_socket_bind(udpecho_pas->s, &inaddr_bind, &listen_port);
@@ -123,7 +123,7 @@ void udpecho_start()
     if (ret != 0) {
         free(udpecho_pas);
         printf("%s: error binding socket to %08X:%u: %s\n", __FUNCTION__, long_be(inaddr_bind.addr), short_be(listen_port), strerror(pico_err));
-        exit(1);
+	goto out;
     }
 
 
