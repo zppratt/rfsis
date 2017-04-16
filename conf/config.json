@@ -1,5 +1,5 @@
 {
-    "backup": false,
+    "backup": true,
     "backup_addr": "192.168.1.20",
     "ipv4_addr": "192.168.1.20",
     "port": 8080,

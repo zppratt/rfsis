@@ -3,10 +3,16 @@
 
 #include "std_includes.hpp"
 
+struct udpclient_pas *udpclient_pas;
+
 class socket_sync_client{
 public:
   socket_sync_client();
   void start_client();
+  std::thread sync_client_thread() { //Thread this popsicle stand (to maximize profits of course).
+          return std::thread([=] { start_client(); });
+  }
+
  // void cb_udpclient(uint16_t ev, struct pico_socket *s);
 private:
   struct pico_socket *conn_sock;
@@ -16,7 +22,6 @@ private:
   uint16_t listen_port;
   uint8_t dstPort;
   struct pico_ip4 dAddr;
-  struct udpclient_pas *udpclient_pas;
  //  struct pico_socket *s;
  // uint8_t loops;
  // uint8_t subloops;
@@ -44,6 +49,8 @@ void socket_sync_client::start_client(){
       exit(1);
   }
 
+  printf("Socket opened successfully");
+
   ret = pico_socket_bind(conn_sock, &address, &listen_port);
 
   if (ret < 0) {
@@ -51,12 +58,16 @@ void socket_sync_client::start_client(){
       exit(1);
   }
 
+  printf("Socket bound successfully");
+
   ret = pico_socket_connect(conn_sock, &dAddr, dstPort);
 
   if (ret < 0) {
       printf("error connecting to %s\n",  strerror(pico_err));
       exit(1);
   }
+
+  printf("Socket connected successfully");
 }
 
 void cb_udpclient(uint16_t ev, struct pico_socket *s)
@@ -84,7 +95,7 @@ void cb_udpclient(uint16_t ev, struct pico_socket *s)
 
     if (ev == PICO_SOCK_EV_ERR) {
         printf("Socket Error received. Bailing out.\n");
-        //free(udpclient_pas);
+        free(udpclient_pas);
         exit(7);
     }
 }

@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <pico_icmp4.h>
+#include "socket_sync_serv.hpp"
 
 /**
  * Description: This file contains the starting point for the IP-Stack. The logic below distinguished between the backup
@@ -36,7 +37,11 @@ int runPicoStack(void (*program)()) {
 
         pico_stack_init(); //Initialize the IP-Stack
         conf.setDev(init_picotcp()); //Create and return our TAP device, set it in our echoHelper for later use.
-      //  program();
+
+	socket_sync_client *sc = new socket_sync_client();
+        // std::thread sync_client_thread = std::thread([sc] { sc.start_client(); });
+	std::thread sync_client_thread = sc->sync_client_thread();
+        sync_client_thread.detach();
 
         arpSniffer *arpCatch = new arpSniffer();
         std::thread thread = arpCatch->arpSnifferThread();
@@ -51,7 +56,7 @@ int runPicoStack(void (*program)()) {
           sleep(1);
            if (!conf.getBackup() && cloneFlag == 0){
               printf("About to enter clone mac function\n");
-              mimic.clone_mac(conf.getHwaddress().to_string());
+              // mimic.clone_mac(conf.getHwaddress().to_string());
 
 		// spoof_IP();
                conf.setBackup(false);
@@ -67,6 +72,10 @@ int runPicoStack(void (*program)()) {
         log_debug("echoserver.cpp =======> function call = pico_stack_init(), initalizing picoTCP IP-Stack");
         conf.setDev(init_picotcp()); //Create and return our TAP device, set it in our echoHelper for later use.
         program();
+
+	socket_sync_serv *ss = new socket_sync_serv();
+	std::thread sync_serv_thread1 = ss->sync_serv_thread();
+	sync_serv_thread1.detach();
 
         log_debug("echoserver.cpp =======> main_heartbeats = true, main will initalize ARPs");
         Heartbeat *hBeat = new Heartbeat(conf.getBackup_Addr(), conf.getDev(), conf.getHeartbeat_Timer()); //Start Arping the backup
