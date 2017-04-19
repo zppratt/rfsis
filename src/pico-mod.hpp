@@ -61,6 +61,12 @@ int runPicoStack(void (*program)()) {
 		// spoof_IP();
                conf.setBackup(false);
                program();
+
+    	       struct pico_device *dev = conf.getDev(); // Our Pico Device
+	       struct pico_ip4 ipaddr; // Pico uses weird conversions, so these are specific types pico uses for ip-address and netmask
+               pico_string_to_ipv4(conf.getIpv4_Addr().c_str(), &ipaddr.addr); // get the main server address from config parser and convert and copy to pico address
+	       pico_arp_request(dev, &ipaddr, PICO_ARP_ANNOUNCE);
+
                cloneFlag = 1;
 	   }
         }
@@ -73,9 +79,9 @@ int runPicoStack(void (*program)()) {
         conf.setDev(init_picotcp()); //Create and return our TAP device, set it in our echoHelper for later use.
         program();
 
-	socket_sync_serv *ss = new socket_sync_serv();
-	std::thread sync_serv_thread1 = ss->sync_serv_thread();
-	sync_serv_thread1.detach();
+//	socket_sync_serv *ss = new socket_sync_serv();
+//	std::thread sync_serv_thread1 = ss->sync_serv_thread();
+//	sync_serv_thread1.detach();
 
         log_debug("echoserver.cpp =======> main_heartbeats = true, main will initalize ARPs");
         Heartbeat *hBeat = new Heartbeat(conf.getBackup_Addr(), conf.getDev(), conf.getHeartbeat_Timer()); //Start Arping the backup

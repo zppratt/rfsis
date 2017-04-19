@@ -53,6 +53,11 @@ void cb_udpecho(uint16_t ev, struct pico_socket *s)
     if (udpecho_exit)
         return;
 
+    if (ev & PICO_SOCK_EV_FIN) { // If socket closed
+        log_debug("[DEBUG:184] echoserver.hpp =======> Socket closed. Exiting normally!");
+        pico_timer_add(2000, deferred_exit, udpecho_pas);
+    }
+
     if (ev == PICO_SOCK_EV_RD) {
         recvbuf = (char*)calloc(1, udpecho_pas->datasize);   //Buffer we will recieve data in
         if (!recvbuf) {

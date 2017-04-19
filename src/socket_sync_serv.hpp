@@ -111,6 +111,7 @@ void udpclient_send(pico_time __attribute__((unused)) now, void __attribute__((u
             return;
         }
 
+	udpclient_pas->datasize = 10;
         memset(buf, '1', udpclient_pas->datasize);
         picoapp_dbg("%s: performing loop %u\n", __FUNCTION__, loop);
         for (i = 0; i < udpclient_pas->subloops; i++) {
