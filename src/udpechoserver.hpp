@@ -77,8 +77,9 @@ void cb_udpecho(uint16_t ev, struct pico_socket *s)
                     }
                     udpecho_exit++;
                 }
-
-                pico_socket_sendto(s, recvbuf, r, (void *)&peer.ip4.addr, port);
+		
+		// char *recvbuf = const_cast<char*>("hello from ACTIVE!".c_str());
+                pico_socket_sendto(s, "Hello from ACTIVE!", 20, (void *)&peer.ip4.addr, port);
             }
         } while (r > 0);
         free(recvbuf);

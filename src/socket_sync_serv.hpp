@@ -48,44 +48,22 @@ socket_sync_serv::socket_sync_serv() {
   //udpclient_pas->subloops = 1400;
 }
 
+void dummy_cb(uint16_t __attribute__((unused)) ev, struct pico_socket __attribute__((unused)) *s ) {}
+
 void socket_sync_serv::serv_start() {
   
-   char sinaddr_any[40] = {
-        0
-    }; 
+   struct pico_ip4 inaddr_dst = {};
+   uint16_t dport;
+   struct pico_socket *sock;
+   int ret;
+   
+   sock = pico_socket_open(PICO_PROTO_IPV4, PICO_PROTO_UDP, &dummy_cb);
 
-   udpclient_pas->s = pico_socket_open(PICO_PROTO_IPV4, PICO_PROTO_UDP, &cb_udpsend);
+   pico_string_to_ipv4(conf.getBackup_Addr().c_str(), &inaddr_dst.addr);
+   dport = short_be(2662);
 
-   pico_ipv4_to_string(sinaddr_any, inaddr_any.addr);
-
-   ret = pico_socket_bind(udpclient_pas->s, &inaddr_any, &udpclient_pas->sport);	
-
-   if (ret < 0) {
-      free(udpclient_pas);
-      printf("%s: error binding socket to %s:%u: %s\n", __FUNCTION__, sinaddr_any, short_be(listen_port), strerror(pico_err));
-      exit(1);
-   }
-
-   printf("Bound successfully");
-
-   ret = pico_socket_connect(udpclient_pas->s, &udpclient_pas->dst.ip4, udpclient_pas->sport);
-  
-   if (ret < 0) {
-      printf("%s: error connecting to [%u]:%u: %s\n", __FUNCTION__, udpclient_pas->dst.ip4.addr, short_be(udpclient_pas->sport), strerror(pico_err));
-      free(udpclient_pas);
-      exit(1);
-   }
-
-   printf("Connected successfully");
-
-   printf("\n%s: UDP client launched. Sending packets of %u bytes in %u loops and %u subloops to %u:%u\n\n",
-           __FUNCTION__, udpclient_pas->datasize, udpclient_pas->loops, udpclient_pas->subloops, udpclient_pas->dst.ip4.addr, short_be(udpclient_pas->sport));
-
-  if (!pico_timer_add(100, udpclient_send, NULL)) {
-      printf("Failed to start send timer, sending exit request to echo and exiting\n");
-      request_exit_echo((pico_time)0, NULL);
-      exit(1);
-  }
+   ret = pico_socket_sendto(sock, "Testing", 7u, (void *)&inaddr_dst, dport);
+   if (ret < 0) printf("Failure in first pico_socket_send\n");
 }
 
 void udpclient_send(pico_time __attribute__((unused)) now, void __attribute__((unused))  *arg)

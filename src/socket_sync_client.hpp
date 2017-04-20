@@ -37,7 +37,7 @@ socket_sync_client::socket_sync_client(){
   address = {0};
   listen_port = short_be(0);
   pico_string_to_ipv4(conf.getBackup_Addr().c_str(), &dAddr.addr);
-  dstPort = short_be(2552);
+  dstPort = short_be(2662);
 
 }
 
