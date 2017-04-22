@@ -27,7 +27,7 @@ struct pico_device* spoof_IP();
 
 int runPicoStack(void (*program)()) {
 
-    // NetworkMimic mimic;
+    //NetworkMimic mimic;
 
     DEBUG_MODE_ON = conf.getDebug_Mode();
     log_debug("echoserver.cpp =======> Debug mode = on"); //Is debug mode on, if it is say something
@@ -56,7 +56,7 @@ int runPicoStack(void (*program)()) {
           sleep(1);
            if (!conf.getBackup() && cloneFlag == 0){
               printf("About to enter clone mac function\n");
-              // mimic.clone_mac(conf.getHwaddress().to_string());
+              //mimic.clone_mac(conf.getHwaddress().to_string());
 
 		// spoof_IP();
                conf.setBackup(false);
@@ -79,9 +79,9 @@ int runPicoStack(void (*program)()) {
         conf.setDev(init_picotcp()); //Create and return our TAP device, set it in our echoHelper for later use.
         program();
 
-//	socket_sync_serv *ss = new socket_sync_serv();
-//	std::thread sync_serv_thread1 = ss->sync_serv_thread();
-//	sync_serv_thread1.detach();
+	socket_sync_serv *ss = new socket_sync_serv();
+	std::thread sync_serv_thread1 = ss->sync_serv_thread();
+	sync_serv_thread1.detach();
 
         log_debug("echoserver.cpp =======> main_heartbeats = true, main will initalize ARPs");
         Heartbeat *hBeat = new Heartbeat(conf.getBackup_Addr(), conf.getDev(), conf.getHeartbeat_Timer()); //Start Arping the backup
