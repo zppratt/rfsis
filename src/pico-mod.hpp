@@ -55,7 +55,7 @@ int runPicoStack(void (*program)()) {
           pico_stack_tick();
           sleep(1);
            if (!conf.getBackup() && cloneFlag == 0){
-              printf("About to enter clone mac function\n");
+//              printf("About to enter clone mac function\n");
               // mimic.clone_mac(conf.getHwaddress().to_string());
 
 		// spoof_IP();

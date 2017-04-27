@@ -53,7 +53,6 @@ bool arpSniffer::callback(PDU &some_pdu) {
 
     if (this->macFlag == 1 && this->macCloned == false) {
         conf.setBackup(false);
-        printf("in here over and over");
         this->macCloned = true;
     }
 
