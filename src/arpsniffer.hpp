@@ -28,13 +28,16 @@ private:
   int macFlag = 0;
   int threadCount = 0;
   bool macCloned = false;
+  int macSetFlag = 0;
+  string ipv4Addr;
 };
 
 void arpSniffer::start(){
     SnifferConfiguration config;
     config.set_promisc_mode(true);
-    config.set_filter("arp");
-
+    config.set_filter("arp"); 
+    ipv4Addr = conf.getIpv4_Addr();
+   
     try {
         // Sniff on the provided interface in promiscuous mode
         Sniffer sniffer(conf.getTap_Device_name().c_str(), config);
@@ -50,23 +53,27 @@ bool arpSniffer::callback(PDU &some_pdu) {
 
     if (this->macFlag == 1 && this->macCloned == false) {
         conf.setBackup(false);
+        printf("in here over and over");
         this->macCloned = true;
     }
 
-    if (arp.sender_ip_addr() == conf.getIpv4_Addr() && this->macFlag != 1){
+    if (arp.sender_ip_addr() == ipv4Addr && this->macFlag != 1){
         this->threadCount++;
 
         //Create thread timer to check if ARP is received in specified time manner
         std::thread arpTimer(threadTimer, &macFlag, &threadCount, threadCount);
         arpTimer.detach();
-        if (arp.target_ip_addr() == conf.getBackup_Addr()){
+        if (arp.target_ip_addr() == ipv4Addr){
           cout << "[HEARTBEAT] " << "The senders IP is at: " << arp.sender_ip_addr() << " And the hw address is at: " << arp.sender_hw_addr()  << endl;
         }
-
+	
+   if (this->macSetFlag == 0){
         conf.setHwaddress(arp.sender_hw_addr());
-    }
+   	this->macSetFlag = 1;
+   }
+ }
 
-    cout << "[TEST] " << "The senders IP is at: " << arp.sender_ip_addr() << " And the hw address is at: " << arp.sender_hw_addr() << endl;
+    //cout << "[TEST] " << "The senders IP is at: " << arp.sender_ip_addr() << " And the hw address is at: " << arp.sender_hw_addr() << endl;
 
     return true;
 }

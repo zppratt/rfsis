@@ -6,6 +6,7 @@
 #include <pico_ipv6.h>
 #include <pico_socket.h>
 #include "std_includes.hpp"
+#include <sstream>
 
 /**** START UDP ECHO ****/
 /*
@@ -77,8 +78,14 @@ void cb_udpecho(uint16_t ev, struct pico_socket *s)
                     }
                     udpecho_exit++;
                 }
-
-                pico_socket_sendto(s, recvbuf, r, (void *)&peer.ip4.addr, port);
+		stringstream ss;
+		if (!conf.getOrigState()){ 
+			ss << "Sending from main server: " << recvbuf << "\n";
+                	pico_socket_sendto(s, ss.str().c_str(), ss.str().length(), (void *)&peer.ip4.addr, port);
+                } else{
+			ss << "Sending from backup server: " << recvbuf << "\n";
+			pico_socket_sendto(s, ss.str().c_str(), ss.str().length(), (void *)&peer.ip4.addr, port);	
+                }
             }
         } while (r > 0);
         free(recvbuf);

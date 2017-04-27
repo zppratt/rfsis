@@ -20,6 +20,7 @@ class ConfigParser{
 public:
   ConfigParser();
   bool getBackup();
+  bool getOrigState();
   void setBackup(bool backup);
   string getBackup_Addr();
   string getIpv4_Addr();
@@ -38,6 +39,7 @@ public:
 
 private:
   bool backup;
+  bool orig_state;
   string backup_addr;
   string ipv4_addr;
   int port;
@@ -75,6 +77,7 @@ ConfigParser::ConfigParser(){
   json config = read_config(); //read in config
 
   backup = config["backup"];
+  orig_state = backup;
   backup_addr = config["backup_addr"];
   ipv4_addr = config["ipv4_addr"];
   port = config["port"];
@@ -96,6 +99,10 @@ bool ConfigParser::getBackup(){ //Getter for backup
 
 void ConfigParser::setBackup(bool backup){
   this->backup = backup;
+}
+
+bool ConfigParser::getOrigState(){
+	return orig_state;
 }
 
 string ConfigParser::getBackup_Addr(){ //Getter for backup_addr

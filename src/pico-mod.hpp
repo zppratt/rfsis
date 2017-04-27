@@ -38,10 +38,10 @@ int runPicoStack(void (*program)()) {
         pico_stack_init(); //Initialize the IP-Stack
         conf.setDev(init_picotcp()); //Create and return our TAP device, set it in our echoHelper for later use.
 
-	socket_sync_client *sc = new socket_sync_client();
+//	socket_sync_client *sc = new socket_sync_client();
         // std::thread sync_client_thread = std::thread([sc] { sc.start_client(); });
-	std::thread sync_client_thread = sc->sync_client_thread();
-        sync_client_thread.detach();
+//	std::thread sync_client_thread = sc->sync_client_thread();
+//      sync_client_thread.detach();
 
         arpSniffer *arpCatch = new arpSniffer();
         std::thread thread = arpCatch->arpSnifferThread();
