@@ -68,7 +68,7 @@ void cb_udpecho(uint16_t ev, struct pico_socket *s)
 
         do {
             r = pico_socket_recvfrom(s, recvbuf, udpecho_pas->datasize, (void *)&peer.ip4.addr, &port);
-            printf("UDP recvfrom returned %d\n", r);
+         
             if (r > 0) {
                 if (strncmp(recvbuf, "end", 3) == 0) {
                     printf("Client requested to exit... test successful.\n");
@@ -79,6 +79,7 @@ void cb_udpecho(uint16_t ev, struct pico_socket *s)
                     udpecho_exit++;
                 }
 		stringstream ss;
+                printf("Received packet from client: %s", recvbuf);
 		if (!conf.getOrigState()){ 
 			ss << "Sending from main server: " << recvbuf << "\n";
                 	pico_socket_sendto(s, ss.str().c_str(), ss.str().length(), (void *)&peer.ip4.addr, port);
@@ -161,7 +162,7 @@ void udpecho_start()
     }
 #endif
 
-    printf("\n%s: UDP echo launched. Receiving packets of %u bytes on port %u\n\n", __FUNCTION__, udpecho_pas->datasize, short_be(listen_port));
+    printf("%s: UDP echo launched. Receiving packets of %u bytes on port %u\n", __FUNCTION__, udpecho_pas->datasize, short_be(listen_port));
 
     /* free strdups */
     if (baddr)
